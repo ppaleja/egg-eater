@@ -1,0 +1,34 @@
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Linux)
+ARCH := elf64
+endif
+ifeq ($(UNAME), Darwin)
+ARCH := macho64
+endif
+
+tests/%.s: tests/%.snek src/main.rs
+	cargo run -- $< tests/$*.s
+
+tests/%.run: tests/%.s runtime/start.rs
+	nasm -f $(ARCH) tests/$*.s -o tests/$*.o
+	ar rcs tests/lib$*.a tests/$*.o
+	rustc -L tests/ -lour_code:$* runtime/start.rs -o tests/$*.run
+
+tests-cobra/%.s: tests-cobra/%.snek src/main.rs
+	cargo run -- $< tests-cobra/$*.s
+
+tests-cobra/%.run: tests-cobra/%.s runtime/start.rs
+	nasm -f $(ARCH) tests-cobra/$*.s -o tests-cobra/$*.o
+	ar rcs tests/lib$*.a tests-cobra/$*.o
+	rustc -L tests-cobra/ -lour_code:$* runtime/start.rs -o tests-cobra/$*.run
+
+
+.PHONY: test
+test:
+	cargo build
+	cargo test
+
+clean:
+	rm -f tests/*.a tests/*.s tests/*.run tests/*.o
+	rm -f tests-cobra/*.a tests-cobra/*.s tests-cobra/*.run tests-cobra/*.o

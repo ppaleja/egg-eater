@@ -1,0 +1,3 @@
+(fun (ret_input x) x)
+
+(ret_input input)

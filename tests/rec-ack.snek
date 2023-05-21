@@ -1,0 +1,8 @@
+(fun (ack m n)
+     (if (= m 0)
+         (+ n 1)
+         (if (= n 0)
+             (ack (sub1 m) 1)
+             (ack (sub1 m) (ack m (sub1 n))))))
+
+(ack 1 1)

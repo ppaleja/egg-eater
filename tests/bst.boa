@@ -1,0 +1,27 @@
+(func make-node (value)
+  (tuple value nil nil))
+
+(func insert (value tree)
+  (if (< value (index 0 tree))
+    (make-node (index 0 tree) (insert value (index 1 tree)) (index 2 tree))
+    (make-node (index 0 tree) (index 1 tree) (insert value (index 2 tree)))))
+
+(func contains? (value tree)
+  (if tree
+    (let ((node-value (index 0 tree))
+          (left-tree (index 1 tree))
+          (right-tree (index 2 tree)))
+      (if (= value node-value)
+        true
+        (if (< value node-value)
+          (contains? value left-tree)
+          (contains? value right-tree))))
+    false))
+
+(let ((tree (make-node 5)))
+  (set! tree (insert 3 tree))
+  (set! tree (insert 7 tree))
+  (set! tree (insert 1 tree))
+  (set! tree (insert 9 tree))
+  (print (contains? 3 tree))) ; Check if 3 is in the tree
+

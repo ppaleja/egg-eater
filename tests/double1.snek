@@ -1,0 +1,4 @@
+(fun (double1) (+ 1 1))
+
+(double1)
+
