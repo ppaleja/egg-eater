@@ -11,13 +11,17 @@ struct Program {
     main: Expr,
 }
 
+const TRUE_VAL: i64 = 7;
+const FALSE_VAL: i64 = 3;
+
 enum Definition {
     Fun1(String, String, Expr),
     Fun2(String, String, String, Expr),
+    Fun3(String, String, String, String, Expr),
 }
 
 use Definition::*;
-
+#[derive(Debug)]
 enum Expr {
     Num(i32),
     True,
@@ -26,6 +30,7 @@ enum Expr {
     Sub1(Box<Expr>),
     Plus(Box<Expr>, Box<Expr>),
     Minus(Box<Expr>, Box<Expr>),
+    IsNum(Box<Expr>),
     Let(String, Box<Expr>, Box<Expr>),
     Id(String),
     Eq(Box<Expr>, Box<Expr>),
@@ -39,6 +44,7 @@ enum Expr {
 
     Call1(String, Box<Expr>),
     Call2(String, Box<Expr>, Box<Expr>),
+    Call3(String, Box<Expr>, Box<Expr>, Box<Expr>),
 
     Pair(Box<Expr>, Box<Expr>),
     Fst(Box<Expr>),
@@ -56,6 +62,7 @@ fn parse_expr(s: &Sexp) -> Expr {
         Sexp::List(vec) => match &vec[..] {
             [Sexp::Atom(S(op)), e] if op == "add1" => Expr::Add1(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e] if op == "sub1" => Expr::Sub1(Box::new(parse_expr(e))),
+            [Sexp::Atom(S(op)), e] if op == "isnum" => Expr::IsNum(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e] if op == "fst" => Expr::Fst(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e] if op == "snd" => Expr::Snd(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e1, e2] if op == "+" => {
@@ -103,11 +110,17 @@ fn parse_expr(s: &Sexp) -> Expr {
             ),
             [Sexp::Atom(S(funname)), arg] => {
                 Expr::Call1(funname.to_string(), Box::new(parse_expr(arg)))
-            }
+            },
             [Sexp::Atom(S(funname)), arg1, arg2] => Expr::Call2(
                 funname.to_string(),
                 Box::new(parse_expr(arg1)),
                 Box::new(parse_expr(arg2)),
+            ),
+            [Sexp::Atom(S(funname)), arg1, arg2, arg3] => Expr::Call3(
+                funname.to_string(),
+                Box::new(parse_expr(arg1)),
+                Box::new(parse_expr(arg2)),
+                Box::new(parse_expr(arg3)),
             ),
 
             _ => panic!("parse error: {}", s),
@@ -138,6 +151,13 @@ fn parse_definition(s: &Sexp) -> Definition {
                         funname.to_string(),
                         arg1.to_string(),
                         arg2.to_string(),
+                        parse_expr(body),
+                    ),
+                    [Sexp::Atom(S(funname)), Sexp::Atom(S(arg1)), Sexp::Atom(S(arg2)), Sexp::Atom(S(arg3))] => Fun3(
+                        funname.to_string(),
+                        arg1.to_string(),
+                        arg2.to_string(),
+                        arg3.to_string(),
                         parse_expr(body),
                     ),
                     _ => panic!("Bad fundef"),
@@ -182,6 +202,8 @@ fn compile_expr(
     brake: &String,
     l: &mut i32,
 ) -> String {
+    println!("Compiling");
+    dbg!(e);
     match e {
         Expr::Num(n) => format!("mov rax, {}", *n << 1),
         Expr::True => format!("mov rax, {}", 3),
@@ -198,6 +220,7 @@ fn compile_expr(
             let offset = index * 8;
             format!(
                 "
+            ; Printing {e:?}
             {e_is}
             sub rsp, {offset}
             mov [rsp], rdi
@@ -215,6 +238,7 @@ fn compile_expr(
             let val_is = compile_expr(val, si, env, brake, l);
             format!(
                 "
+                ; setting {name} to {val:?}
               {val_is}
               {save}
               "
@@ -222,6 +246,20 @@ fn compile_expr(
         }
         Expr::Add1(subexpr) => compile_expr(subexpr, si, env, brake, l) + "\nadd rax, 2",
         Expr::Sub1(subexpr) => compile_expr(subexpr, si, env, brake, l) + "\nsub rax, 2",
+        Expr::IsNum(e) => {
+            let e_instr = compile_expr(e, si, env, brake, l);
+            format!(
+                "
+                ; Checking if {e:?} is a number
+                {e_instr}
+                and rax, 1
+                cmp rax, 0
+                mov rbx, {TRUE_VAL}
+                mov rax, {FALSE_VAL}
+                cmove rax, rbx
+                "
+            )
+        }
         Expr::Break(e) => {
             let e_is = compile_expr(e, si, env, brake, l);
             format!(
@@ -237,6 +275,7 @@ fn compile_expr(
             let e_is = compile_expr(e, si, env, &endloop, l);
             format!(
                 "
+                ; Loop {e:?}
               {startloop}:
               {e_is}
               jmp {startloop}
@@ -264,8 +303,8 @@ fn compile_expr(
                 mov rbx, 7
                 jne throw_error
                 cmp rax, [rsp + {offset}]
-                mov rbx, 3
-                mov rax, 1
+                mov rbx, {TRUE_VAL}
+                mov rax, {FALSE_VAL}
                 cmovg rax, rbx
             "
             )
@@ -285,8 +324,8 @@ fn compile_expr(
                 mov rbx, 7
                 jne throw_error
                 cmp rax, [rsp + {offset}]
-                mov rbx, 3
-                mov rax, 1
+                mov rbx, {TRUE_VAL}
+                mov rax, {FALSE_VAL}
                 cmove rax, rbx
             "
             )
@@ -299,8 +338,9 @@ fn compile_expr(
             let els_instrs = compile_expr(els, si, env, brake, l);
             format!(
                 "
+                ; if block {e:?}
               {cond_instrs}
-              cmp rax, 1
+              cmp rax, {FALSE_VAL}
               je {else_label}
                 {thn_instrs}
                 jmp {end_label}
@@ -347,7 +387,8 @@ fn compile_expr(
               add rax, [rsp + {stack_offset}]
           "
             )
-        }
+        },
+
         Expr::Let(name, val, body) => {
             let val_is = compile_expr(val, si, env, brake, l);
             let body_is = compile_expr(body, si + 1, &env.update(name.to_string(), si), brake, l);
@@ -365,6 +406,7 @@ fn compile_expr(
             let offset = 2 * 8; // one extra word for rdi saving, one for arg
             format!(
                 "
+                ; Calling {name:?} with {arg:?}
                 {arg_is}
                 sub rsp, {offset}
                 mov [rsp], rax
@@ -385,20 +427,60 @@ fn compile_expr(
             // We then want to get rdi at [rsp+16], arg2 at [rsp+8], and arg1 at [rsp], then call
             format!(
                 "
+                ; Calling {name} with {arg1:?}, {arg2:?}
                 {arg1_is}
                 mov [rsp + {curr_word}], rax
                 {arg2_is}
                 sub rsp, {offset}
-                mov rbx, [rsp+{curr_word_after_sub}]
-                mov [rsp], rbx
-                mov [rsp+8], rax
                 mov [rsp+16], rdi
+                mov [rsp+8], rax
+                
+                mov rax, [rsp+{curr_word_after_sub}]
+                mov [rsp], rax
                 call {name}
                 mov rdi, [rsp+16]
                 add rsp, {offset}
             "
             )
-        }
+        },
+
+        Expr::Call3(name, arg1, arg2, arg3) => {
+        let arg1_is = compile_expr(arg1, si, env, brake, l);
+        let arg2_is = compile_expr(arg2, si + 1, env, brake, l);
+        let arg3_is = compile_expr(arg3, si + 2, env, brake, l);
+        let offset = 4 * 8;
+        let arg1_location = si * 8;
+        let arg2_location = (si + 1) * 8;
+        let arg1_location_after_sub = offset + arg1_location;
+        let arg2_location_after_sub = offset + arg2_location;
+        
+
+        // With this setup, the current word will be at [rsp+24], which is where arg1 is stored
+        // We then want to get rdi at [rsp+24], arg3 at [rsp+16], arg2 at [rsp+8], and arg1 at [rsp], then call
+        format!(
+            "
+            ; Calling {name} with {arg1:?}, {arg2:?}, {arg3:?}
+            {arg1_is}
+            mov [rsp + {arg1_location}], rax
+            {arg2_is}
+            mov [rsp + {arg2_location}], rax
+            {arg3_is}
+            sub rsp, {offset}
+            mov [rsp+24], rdi
+            mov [rsp+16], rax
+
+            mov rax, [rsp+{arg2_location_after_sub}]
+            mov [rsp + 8], rax
+
+            mov rax, [rsp + {arg1_location_after_sub}]
+            mov [rsp], rax
+
+            call {name}
+            mov rdi, [rsp+24]
+            add rsp, {offset}
+        "
+        )
+    }
 
         Expr::Pair(e1, e2) => {
             let e1is = compile_expr(e1, si, env, brake, l);
@@ -406,6 +488,7 @@ fn compile_expr(
             let stack_offset = si * 8;
             format!(
                 "
+                ; Making pair {e1:?}, {e2:?}
                 {e1is}
                 mov [rsp + {stack_offset}], rax
                 {e2is}
@@ -469,7 +552,8 @@ fn compile_expr(
                 mov rax, [rsp + {stack_offset}]
             "
             )
-        }
+        },
+        
     }
 }
 
@@ -481,6 +565,7 @@ fn depth(e: &Expr) -> i32 {
         Expr::False => 0,
         Expr::Add1(expr) => depth(expr),
         Expr::Sub1(expr) => depth(expr),
+        Expr::IsNum(expr) => depth(expr),
         Expr::Plus(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Minus(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Let(_, expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
@@ -495,6 +580,7 @@ fn depth(e: &Expr) -> i32 {
         Expr::Set(_, expr) => depth(expr),
         Expr::Call1(_, expr) => depth(expr),
         Expr::Call2(_, expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
+        Expr::Call3(_, expr1, expr2, expr3) => depth(expr1).max(depth(expr2) + 1).max(depth(expr3) + 2),
         Expr::Pair(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Fst(expr) => depth(expr),
         Expr::Snd(expr) => depth(expr),
@@ -553,9 +639,28 @@ fn compile_definition(d: &Definition, labels: &mut i32) -> String {
                 sub rsp, {offset}
                 {body_is}
                 add rsp, {offset}
-                ret"
+                ret
+                "
             )
-        }
+        },
+        Fun3(name, arg1, arg2, arg3, body) => {
+            let depth = depth(body);
+            let offset = depth * 8;
+            let body_env = hashmap! {
+                arg1.to_string() => depth + 1,
+                arg2.to_string() => depth + 2,
+                arg3.to_string() => depth + 3
+            };
+            let body_is = compile_expr(body, 0, &body_env, &String::from(""), labels);
+            format!(
+                "{name}:
+                sub rsp, {offset}
+                {body_is}
+                add rsp, {offset}
+                ret
+                "
+            )
+        },
     }
 }
 
