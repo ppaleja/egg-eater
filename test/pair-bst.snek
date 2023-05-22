@@ -1,0 +1,33 @@
+; Binary Search Tree
+(fun (make_node value left right)
+  (pair value (pair left right)))
+
+(fun (insert tree value)
+  (if (isnum tree)
+    (if (< value tree)
+      (make_node tree value false)
+      (make_node tree false value))
+    (if (< value (fst tree))
+      (make_node (fst tree) (insert (snd tree) value) (snd tree))
+      (make_node (fst tree) (fst tree) (insert (snd tree) value)))))
+
+(fun (contains tree value)
+  (if (isnum tree)
+    false
+    (if (= value (fst tree))
+      true
+      (if (< value (fst tree))
+        (contains (snd tree) value)
+        (contains (fst tree) value)))))
+
+; Test
+(let (tree (make_node 5 false false)) (block
+  (set! tree (insert tree 3))
+  (set! tree (insert tree 7))
+  (set! tree (insert tree 1))
+  (set! tree (insert tree 4))
+  (set! tree (insert tree 6))
+  (set! tree (insert tree 8))
+  (print (if (contains tree 4) true false))
+))
+  

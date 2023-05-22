@@ -1,0 +1,33 @@
+; Define the point structure
+(fun (make_point x y)
+  (pair x y))
+
+; Define a function to add two points
+(fun (add_points point1 point2)
+  (make_point (+ (fst point1) (fst point2))
+              (+ (snd point1) (snd point2))))
+
+; Test the functions
+(block 
+  (print (add_points (make_point 2 3) (make_point 4 5)))
+  (print (add_points (make_point 2 3) (make_point -1 8)))
+  (print (add_points (make_point 4 5) (make_point -1 8)))
+)
+
+
+# (let (point1 (make_point 2 3)) (
+#   let (point2 (make_point 4 5)) (
+#     let (point3 (make_point -1 8) (block 
+#       (print (add_points (make_point 2 3) (make_point 4 5)))
+#       (print (add_points (make_point 2 3) (make_point -1 8)))
+#       (print (add_points (make_point 4 5) (make_point -1 8)))
+#     ))
+#   )
+# ))
+
+# (let ((point1 (make_point 2 3))
+#       (point2 (make_point 4 5))
+#       (point3 (make_point -1 8)))
+#   (print (add_points point1 point2))
+#   (print (add_points point1 point3))
+#   (print (add_points point2 point3)))
