@@ -221,8 +221,8 @@ fn compile_expr(
     // println!("Compiling");
     match e {
         Expr::Num(n) => format!("mov rax, {}", *n << 1),
-        Expr::True => format!("mov rax, {}", 3),
-        Expr::False => format!("mov rax, {}", 1),
+        Expr::True => format!("mov rax, {}", 7),
+        Expr::False => format!("mov rax, {}", 3),
         Expr::Id(s) if s == "input" => format!("mov rax, rdi"),
         Expr::Id(s) if s == "nil" => format!("mov rax, 0x1"),
         Expr::Id(s) => {
@@ -238,10 +238,10 @@ fn compile_expr(
             ; Printing {e:?}
             {e_is}
             sub rsp, {offset}
-            mov [rsp], rdi
+            ;mov [rsp], rdi
             mov rdi, rax
             call snek_print
-            mov rdi, [rsp]
+            ;mov rdi, [rsp]
             add rsp, {offset}
           "
             )
@@ -432,6 +432,7 @@ fn compile_expr(
             let offset = si * 8;
             format!(
                 "
+                ; Let {name} = {val:?}
               {val_is}
               mov [rsp + {offset}], rax
               {body_is}
@@ -440,16 +441,16 @@ fn compile_expr(
         }
         Expr::Call1(name, arg) => {
             let arg_is = compile_expr(arg, si, env, brake, l);
-            let offset = 2 * 8; // one extra word for rdi saving, one for arg
+            let offset = 1 * 8; // one extra word for rdi saving, one for arg
             format!(
                 "
                 ; Calling {name:?} with {arg:?}
                 {arg_is}
                 sub rsp, {offset}
                 mov [rsp], rax
-                mov [rsp+8], rdi
+                ;mov [rsp+8], rdi
                 call {name}
-                mov rdi, [rsp+8]
+                ;mov rdi, [rsp+8]
                 add rsp, {offset}
             "
             )
@@ -458,7 +459,7 @@ fn compile_expr(
             let arg1_is = compile_expr(arg1, si, env, brake, l);
             let arg2_is = compile_expr(arg2, si + 1, env, brake, l);
             let curr_word = si * 8;
-            let offset = 3 * 8;
+            let offset = 2 * 8;
             let curr_word_after_sub = offset + curr_word;
             // With this setup, the current word will be at [rsp+16], which is where arg1 is stored
             // We then want to get rdi at [rsp+16], arg2 at [rsp+8], and arg1 at [rsp], then call
@@ -469,13 +470,13 @@ fn compile_expr(
                 mov [rsp + {curr_word}], rax
                 {arg2_is}
                 sub rsp, {offset}
-                mov [rsp+16], rdi
+                ;mov [rsp+16], rdi
                 mov [rsp+8], rax
                 
                 mov rax, [rsp+{curr_word_after_sub}]
                 mov [rsp], rax
                 call {name}
-                mov rdi, [rsp+16]
+                ;mov rdi, [rsp+16]
                 add rsp, {offset}
             "
             )
@@ -485,7 +486,7 @@ fn compile_expr(
         let arg1_is = compile_expr(arg1, si, env, brake, l);
         let arg2_is = compile_expr(arg2, si + 1, env, brake, l);
         let arg3_is = compile_expr(arg3, si + 2, env, brake, l);
-        let offset = 4 * 8;
+        let offset = 3 * 8;
         let arg1_location = si * 8;
         let arg2_location = (si + 1) * 8;
         let arg1_location_after_sub = offset + arg1_location;
@@ -503,7 +504,7 @@ fn compile_expr(
             mov [rsp + {arg2_location}], rax
             {arg3_is}
             sub rsp, {offset}
-            mov [rsp+24], rdi
+            ;mov [rsp+24], rdi
             mov [rsp+16], rax
 
             mov rax, [rsp+{arg2_location_after_sub}]
@@ -513,7 +514,7 @@ fn compile_expr(
             mov [rsp], rax
 
             call {name}
-            mov rdi, [rsp+24]
+            ;mov rdi, [rsp+24]
             add rsp, {offset}
             "
             )
@@ -582,6 +583,17 @@ fn compile_expr(
 
             instrs += format!("
                 {tup_is}
+                ; Let's make sure that this is a valid addr
+                test rax, 1
+                mov rbx, 7
+                jz throw_error 
+
+                ; Null pointer exception
+                cmp rax, 0
+                mov rbx, 9
+                je throw_error
+
+
                 sub rax, 1
                 mov [rsp + {tup_offset}], rax
                 {idx_is}
@@ -589,21 +601,32 @@ fn compile_expr(
             // So now [rsp + {tup_offset}] has the mem address of the tuple
             // and the evaluated idx is in rax
 
-            // TODO: Type check for idx here
-            // TODO: Check for out of bounds here.
             // Out of bounds happens when ([[rsp + tup_offset]] = len) < idx
 
             instrs += format!("
+                ; First make sure that rax = idx is a valid number
+                mov rbx, rax
+                test rbx, 1
+                mov rbx, 7
+                jnz throw_error
+
+                ; Then we want to make sure (rax=idx) !< 0 
+                cmp rax, 0
+                mov rbx, 8
+                jl throw_error
+
                 ; [rsp + {tup_offset}] has the heap location for the tuple
                 mov rbx, [rsp + {tup_offset}]
                 
                 ; [[rsp + {tup_offset}]] has the 0th value (which is len)
                 mov rbx, [rbx]
 
+
                 ; rbx < rax => 2len < 2idx => len < idx
                 cmp rbx, rax
                 mov rbx, 8
                 jl throw_error
+
 
                 ; rax should still have 2idx, to get a word value, we mul by 4.
                 imul rax, 4
@@ -691,9 +714,6 @@ fn compile_expr(
             "
             )
         },
-        Expr::Tuple(_) => todo!(),
-        Expr::Index(_, _) => todo!(),
-        
     }
 }
 

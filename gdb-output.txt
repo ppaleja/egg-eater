@@ -1,0 +1,1039 @@
+
+(gdb) s
+Single stepping until exit from function ifelse_1,
+which has no line number information.
+0x000055555556201a in make_node ()
+(gdb) s
+Single stepping until exit from function make_node,
+which has no line number information.
+0x0000555555562358 in ifelse_1 ()
+(gdb) s
+Single stepping until exit from function ifelse_1,
+which has no line number information.
+0x00005555555625f2 in ifend_4 ()
+(gdb) s
+Single stepping until exit from function ifend_4,
+which has no line number information.
+0x0000555555562920 in our_code_starts_here ()
+(gdb) si
+0x0000555555562924 in our_code_starts_here ()
+(gdb) 
+0x0000555555562928 in our_code_starts_here ()
+(gdb) 
+0x000055555556292d in our_code_starts_here ()
+(gdb) 
+0x0000555555562932 in our_code_starts_here ()
+(gdb) 
+0x0000555555562936 in our_code_starts_here ()
+(gdb) 
+0x000055555556293a in our_code_starts_here ()
+(gdb) 
+0x000055555556293f in our_code_starts_here ()
+(gdb) 
+0x0000555555562944 in our_code_starts_here ()
+(gdb) 
+0x0000555555562948 in our_code_starts_here ()
+(gdb) 
+0x0000555555562051 in insert ()
+(gdb) 
+0x0000555555562055 in insert ()
+(gdb) so
+source command requires file name of file to source.
+(gdb) s
+Single stepping until exit from function insert,
+which has no line number information.
+0x00005555555620d2 in ifelse_1 ()
+(gdb) s
+Single stepping until exit from function ifelse_1,
+which has no line number information.
+0x0000555555562361 in ifelse_3 ()
+(gdb) 
+Single stepping until exit from function ifelse_3,
+which has no line number information.
+0x0000555555562051 in insert ()
+(gdb) 
+Single stepping until exit from function insert,
+which has no line number information.
+0x000055555556201a in make_node ()
+(gdb) s
+Single stepping until exit from function make_node,
+which has no line number information.
+0x00005555555620c9 in insert ()
+(gdb) 
+Single stepping until exit from function insert,
+which has no line number information.
+0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Single stepping until exit from function ifend_4,
+which has no line number information.
+0x00005555555625c2 in ifelse_3 ()
+(gdb) 
+Single stepping until exit from function ifelse_3,
+which has no line number information.
+0x000055555556201a in make_node ()
+(gdb) 
+Single stepping until exit from function make_node,
+which has no line number information.
+0x00005555555625e7 in ifelse_3 ()
+(gdb) 
+Single stepping until exit from function ifelse_3,
+which has no line number information.
+0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Single stepping until exit from function ifend_4,
+which has no line number information.
+Warning:
+Cannot insert breakpoint 0.
+Cannot access memory at address 0xe
+
+0x00007ffff75e6080 in ?? ()
+(gdb) s
+Cannot find bounds of current function
+(gdb) ni
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff75e6080 in ?? ()
+(gdb) break ifend_4
+Breakpoint 5 at 0x5555555625f2
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/ppaleja/egg-eater/test/bst-full.run 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 2, 0x00005555555628b3 in our_code_starts_here ()
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff75e6080 in ?? ()
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/ppaleja/egg-eater/test/bst-full.run 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 2, 0x00005555555628b3 in our_code_starts_here ()
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) disassemble
+Dump of assembler code for function ifend_4:
+=> 0x00005555555625f2 <+0>:     add    $0x18,%rsp
+   0x00005555555625f6 <+4>:     retq   
+End of assembler dump.
+(gdb) s
+Single stepping until exit from function ifend_4,
+which has no line number information.
+0x00005555555622af in ifelse_1 ()
+(gdb) dissassemble
+Undefined command: "dissassemble".  Try "help".
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) dissassemble
+Undefined command: "dissassemble".  Try "help".
+(gdb) disassemble
+Dump of assembler code for function ifend_4:
+=> 0x00005555555625f2 <+0>:     add    $0x18,%rsp
+   0x00005555555625f6 <+4>:     retq   
+End of assembler dump.
+(gdb) s
+Single stepping until exit from function ifend_4,
+which has no line number information.
+0x0000555555562920 in our_code_starts_here ()
+(gdb) disassemble
+Dump of assembler code for function our_code_starts_here:
+   0x00005555555628b3 <+0>:     mov    %rsi,%r15
+   0x00005555555628b6 <+3>:     sub    $0x10,%rsp
+   0x00005555555628ba <+7>:     mov    $0xa,%eax
+   0x00005555555628bf <+12>:    mov    %rax,(%rsp)
+   0x00005555555628c3 <+16>:    mov    $0x1,%eax
+   0x00005555555628c8 <+21>:    mov    %rax,0x8(%rsp)
+   0x00005555555628cd <+26>:    mov    $0x1,%eax
+   0x00005555555628d2 <+31>:    sub    $0x18,%rsp
+   0x00005555555628d6 <+35>:    mov    %rax,0x10(%rsp)
+   0x00005555555628db <+40>:    mov    0x20(%rsp),%rax
+   0x00005555555628e0 <+45>:    mov    %rax,0x8(%rsp)
+   0x00005555555628e5 <+50>:    mov    0x18(%rsp),%rax
+   0x00005555555628ea <+55>:    mov    %rax,(%rsp)
+   0x00005555555628ee <+59>:    callq  0x55555556201a <make_node>
+   0x00005555555628f3 <+64>:    add    $0x18,%rsp
+   0x00005555555628f7 <+68>:    mov    %rax,(%rsp)
+   0x00005555555628fb <+72>:    mov    $0x6,%eax
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562900 <+77>:    mov    %rax,0x8(%rsp)
+   0x0000555555562905 <+82>:    mov    (%rsp),%rax
+   0x0000555555562909 <+86>:    sub    $0x10,%rsp
+   0x000055555556290d <+90>:    mov    %rax,0x8(%rsp)
+   0x0000555555562912 <+95>:    mov    0x18(%rsp),%rax
+   0x0000555555562917 <+100>:   mov    %rax,(%rsp)
+   0x000055555556291b <+104>:   callq  0x555555562051 <insert>
+=> 0x0000555555562920 <+109>:   add    $0x10,%rsp
+   0x0000555555562924 <+113>:   mov    %rax,(%rsp)
+   0x0000555555562928 <+117>:   mov    $0xe,%eax
+   0x000055555556292d <+122>:   mov    %rax,0x8(%rsp)
+   0x0000555555562932 <+127>:   mov    (%rsp),%rax
+   0x0000555555562936 <+131>:   sub    $0x10,%rsp
+   0x000055555556293a <+135>:   mov    %rax,0x8(%rsp)
+   0x000055555556293f <+140>:   mov    0x18(%rsp),%rax
+   0x0000555555562944 <+145>:   mov    %rax,(%rsp)
+   0x0000555555562948 <+149>:   callq  0x555555562051 <insert>
+   0x000055555556294d <+154>:   add    $0x10,%rsp
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562951 <+158>:   mov    %rax,(%rsp)
+End of assembler dump.
+(gdb) si
+0x0000555555562924 in our_code_starts_here ()
+(gdb) 
+0x0000555555562928 in our_code_starts_here ()
+(gdb) 
+0x000055555556292d in our_code_starts_here ()
+(gdb) 
+0x0000555555562932 in our_code_starts_here ()
+(gdb) 
+0x0000555555562936 in our_code_starts_here ()
+(gdb) 
+0x000055555556293a in our_code_starts_here ()
+(gdb) 
+0x000055555556293f in our_code_starts_here ()
+(gdb) 
+0x0000555555562944 in our_code_starts_here ()
+(gdb) 
+0x0000555555562948 in our_code_starts_here ()
+(gdb) 
+0x0000555555562051 in insert ()
+(gdb) 
+0x0000555555562055 in insert ()
+(gdb) s
+Single stepping until exit from function insert,
+which has no line number information.
+0x00005555555620d2 in ifelse_1 ()
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) s
+Single stepping until exit from function ifend_4,
+which has no line number information.
+0x00005555555625c2 in ifelse_3 ()
+(gdb) s
+Single stepping until exit from function ifelse_3,
+which has no line number information.
+0x000055555556201a in make_node ()
+(gdb) s
+Single stepping until exit from function make_node,
+which has no line number information.
+0x00005555555625e7 in ifelse_3 ()
+(gdb) s
+Single stepping until exit from function ifelse_3,
+which has no line number information.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) s
+Single stepping until exit from function ifend_4,
+which has no line number information.
+Warning:
+Cannot insert breakpoint 0.
+Cannot access memory at address 0xe
+
+0x00007ffff75e6080 in ?? ()
+(gdb) info registers
+rax            0x7ffff75e60f1      140737343545585
+rbx            0x7                 7
+rcx            0x7ffff75e6010      140737343545360
+rdx            0x7ffff75e6010      140737343545360
+rsi            0x7ffff75e6010      140737343545360
+rdi            0x1                 1
+rbp            0x7fffff7fe000      0x7fffff7fe000
+rsp            0x7fffffffd5c8      0x7fffffffd5c8
+r8             0x7ffff75e6010      140737343545360
+r9             0x0                 0
+r10            0x22                34
+r11            0x246               582
+r12            0x7fffffffd720      140737488344864
+r13            0x7fffffffd6d0      140737488344784
+r14            0x0                 0
+r15            0x7ffff75e6128      140737343545640
+rip            0x7ffff75e6080      0x7ffff75e6080
+eflags         0x216               [ PF AF IF ]
+--Type <RET> for more, q to quit, c to continue without paging--
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) break ifelse_3
+Breakpoint 6 at 0x555555562361
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/ppaleja/egg-eater/test/bst-full.run 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 2, 0x00005555555628b3 in our_code_starts_here ()
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 6, 0x0000555555562361 in ifelse_3 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff75e6080 in ?? ()
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/ppaleja/egg-eater/test/bst-full.run 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 2, 0x00005555555628b3 in our_code_starts_here ()
+(gdb) d
+Delete all breakpoints? (y or n) n
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 6, 0x0000555555562361 in ifelse_3 ()
+(gdb) disassemble
+Dump of assembler code for function ifelse_3:
+=> 0x0000555555562361 <+0>:     mov    0x20(%rsp),%rax
+   0x0000555555562366 <+5>:     mov    %rax,(%rsp)
+   0x000055555556236a <+9>:     mov    0x28(%rsp),%rax
+   0x000055555556236f <+14>:    test   $0x1,%rax
+   0x0000555555562375 <+20>:    mov    $0x7,%ebx
+   0x000055555556237a <+25>:    je     0x555555562010 <throw_error>
+   0x0000555555562380 <+31>:    cmp    $0x0,%rax
+   0x0000555555562384 <+35>:    mov    $0x9,%ebx
+   0x0000555555562389 <+40>:    je     0x555555562010 <throw_error>
+   0x000055555556238f <+46>:    sub    $0x1,%rax
+   0x0000555555562393 <+50>:    mov    %rax,0x8(%rsp)
+   0x0000555555562398 <+55>:    mov    $0x2,%eax
+   0x000055555556239d <+60>:    mov    %rax,%rbx
+   0x00005555555623a0 <+63>:    test   $0x1,%rbx
+   0x00005555555623a7 <+70>:    mov    $0x7,%ebx
+   0x00005555555623ac <+75>:    jne    0x555555562010 <throw_error>
+   0x00005555555623b2 <+81>:    cmp    $0x0,%rax
+   0x00005555555623b6 <+85>:    mov    $0x8,%ebx
+   0x00005555555623bb <+90>:    jl     0x555555562010 <throw_error>
+   0x00005555555623c1 <+96>:    mov    0x8(%rsp),%rbx
+   0x00005555555623c6 <+101>:   mov    (%rbx),%rbx
+   0x00005555555623c9 <+104>:   cmp    %rax,%rbx
+   0x00005555555623cc <+107>:   mov    $0x8,%ebx
+   0x00005555555623d1 <+112>:   jl     0x555555562010 <throw_error>
+   0x00005555555623d7 <+118>:   imul   $0x4,%rax,%rax
+   0x00005555555623db <+122>:   mov    0x8(%rsp),%rbx
+   0x00005555555623e0 <+127>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555623e4 <+131>:   mov    $0x0,%ebx
+   0x00005555555623e9 <+136>:   mov    %rax,%rbx
+   0x00005555555623ec <+139>:   or     (%rsp),%rbx
+   0x00005555555623f0 <+143>:   test   $0x1,%rbx
+   0x00005555555623f7 <+150>:   mov    $0x7,%ebx
+   0x00005555555623fc <+155>:   jne    0x555555562010 <throw_error>
+   0x0000555555562402 <+161>:   cmp    (%rsp),%rax
+   0x0000555555562406 <+165>:   mov    $0x7,%ebx
+   0x000055555556240b <+170>:   mov    $0x3,%eax
+   0x0000555555562410 <+175>:   cmovl  %rbx,%rax
+   0x0000555555562414 <+179>:   cmp    $0x3,%rax
+   0x0000555555562418 <+183>:   je     0x5555555625ed <ifelse_5>
+   0x000055555556241e <+189>:   mov    0x28(%rsp),%rax
+   0x0000555555562423 <+194>:   test   $0x1,%rax
+   0x0000555555562429 <+200>:   mov    $0x7,%ebx
+   0x000055555556242e <+205>:   je     0x555555562010 <throw_error>
+   0x0000555555562434 <+211>:   cmp    $0x0,%rax
+   0x0000555555562438 <+215>:   mov    $0x9,%ebx
+   0x000055555556243d <+220>:   je     0x555555562010 <throw_error>
+   0x0000555555562443 <+226>:   sub    $0x1,%rax
+   0x0000555555562447 <+230>:   mov    %rax,(%rsp)
+   0x000055555556244b <+234>:   mov    $0x2,%eax
+   0x0000555555562450 <+239>:   mov    %rax,%rbx
+   0x0000555555562453 <+242>:   test   $0x1,%rbx
+   0x000055555556245a <+249>:   mov    $0x7,%ebx
+   0x000055555556245f <+254>:   jne    0x555555562010 <throw_error>
+--Type <RET> for more, q to quit, c to continue without paging--c
+   0x0000555555562465 <+260>:   cmp    $0x0,%rax
+   0x0000555555562469 <+264>:   mov    $0x8,%ebx
+   0x000055555556246e <+269>:   jl     0x555555562010 <throw_error>
+   0x0000555555562474 <+275>:   mov    (%rsp),%rbx
+   0x0000555555562478 <+279>:   mov    (%rbx),%rbx
+   0x000055555556247b <+282>:   cmp    %rax,%rbx
+   0x000055555556247e <+285>:   mov    $0x8,%ebx
+   0x0000555555562483 <+290>:   jl     0x555555562010 <throw_error>
+   0x0000555555562489 <+296>:   imul   $0x4,%rax,%rax
+   0x000055555556248d <+300>:   mov    (%rsp),%rbx
+   0x0000555555562491 <+304>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562495 <+308>:   mov    $0x0,%ebx
+   0x000055555556249a <+313>:   mov    %rax,(%rsp)
+   0x000055555556249e <+317>:   mov    0x28(%rsp),%rax
+   0x00005555555624a3 <+322>:   test   $0x1,%rax
+   0x00005555555624a9 <+328>:   mov    $0x7,%ebx
+   0x00005555555624ae <+333>:   je     0x555555562010 <throw_error>
+   0x00005555555624b4 <+339>:   cmp    $0x0,%rax
+   0x00005555555624b8 <+343>:   mov    $0x9,%ebx
+   0x00005555555624bd <+348>:   je     0x555555562010 <throw_error>
+   0x00005555555624c3 <+354>:   sub    $0x1,%rax
+   0x00005555555624c7 <+358>:   mov    %rax,0x8(%rsp)
+   0x00005555555624cc <+363>:   mov    $0x4,%eax
+   0x00005555555624d1 <+368>:   mov    %rax,%rbx
+   0x00005555555624d4 <+371>:   test   $0x1,%rbx
+   0x00005555555624db <+378>:   mov    $0x7,%ebx
+   0x00005555555624e0 <+383>:   jne    0x555555562010 <throw_error>
+   0x00005555555624e6 <+389>:   cmp    $0x0,%rax
+   0x00005555555624ea <+393>:   mov    $0x8,%ebx
+   0x00005555555624ef <+398>:   jl     0x555555562010 <throw_error>
+   0x00005555555624f5 <+404>:   mov    0x8(%rsp),%rbx
+   0x00005555555624fa <+409>:   mov    (%rbx),%rbx
+   0x00005555555624fd <+412>:   cmp    %rax,%rbx
+   0x0000555555562500 <+415>:   mov    $0x8,%ebx
+   0x0000555555562505 <+420>:   jl     0x555555562010 <throw_error>
+   0x000055555556250b <+426>:   imul   $0x4,%rax,%rax
+   0x000055555556250f <+430>:   mov    0x8(%rsp),%rbx
+   0x0000555555562514 <+435>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562518 <+439>:   mov    $0x0,%ebx
+   0x000055555556251d <+444>:   mov    %rax,0x8(%rsp)
+   0x0000555555562522 <+449>:   mov    0x20(%rsp),%rax
+   0x0000555555562527 <+454>:   mov    %rax,0x10(%rsp)
+   0x000055555556252c <+459>:   mov    0x28(%rsp),%rax
+   0x0000555555562531 <+464>:   test   $0x1,%rax
+   0x0000555555562537 <+470>:   mov    $0x7,%ebx
+   0x000055555556253c <+475>:   je     0x555555562010 <throw_error>
+   0x0000555555562542 <+481>:   cmp    $0x0,%rax
+   0x0000555555562546 <+485>:   mov    $0x9,%ebx
+   0x000055555556254b <+490>:   je     0x555555562010 <throw_error>
+   0x0000555555562551 <+496>:   sub    $0x1,%rax
+   0x0000555555562555 <+500>:   mov    %rax,0x18(%rsp)
+   0x000055555556255a <+505>:   mov    $0x6,%eax
+   0x000055555556255f <+510>:   mov    %rax,%rbx
+   0x0000555555562562 <+513>:   test   $0x1,%rbx
+   0x0000555555562569 <+520>:   mov    $0x7,%ebx
+   0x000055555556256e <+525>:   jne    0x555555562010 <throw_error>
+   0x0000555555562574 <+531>:   cmp    $0x0,%rax
+   0x0000555555562578 <+535>:   mov    $0x8,%ebx
+   0x000055555556257d <+540>:   jl     0x555555562010 <throw_error>
+   0x0000555555562583 <+546>:   mov    0x18(%rsp),%rbx
+   0x0000555555562588 <+551>:   mov    (%rbx),%rbx
+   0x000055555556258b <+554>:   cmp    %rax,%rbx
+   0x000055555556258e <+557>:   mov    $0x8,%ebx
+   0x0000555555562593 <+562>:   jl     0x555555562010 <throw_error>
+   0x0000555555562599 <+568>:   imul   $0x4,%rax,%rax
+   0x000055555556259d <+572>:   mov    0x18(%rsp),%rbx
+   0x00005555555625a2 <+577>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555625a6 <+581>:   mov    $0x0,%ebx
+   0x00005555555625ab <+586>:   sub    $0x10,%rsp
+   0x00005555555625af <+590>:   mov    %rax,0x8(%rsp)
+   0x00005555555625b4 <+595>:   mov    0x20(%rsp),%rax
+   0x00005555555625b9 <+600>:   mov    %rax,(%rsp)
+   0x00005555555625bd <+604>:   callq  0x555555562051 <insert>
+   0x00005555555625c2 <+609>:   add    $0x10,%rsp
+   0x00005555555625c6 <+613>:   sub    $0x18,%rsp
+   0x00005555555625ca <+617>:   mov    %rax,0x10(%rsp)
+   0x00005555555625cf <+622>:   mov    0x20(%rsp),%rax
+   0x00005555555625d4 <+627>:   mov    %rax,0x8(%rsp)
+   0x00005555555625d9 <+632>:   mov    0x18(%rsp),%rax
+   0x00005555555625de <+637>:   mov    %rax,(%rsp)
+   0x00005555555625e2 <+641>:   callq  0x55555556201a <make_node>
+   0x00005555555625e7 <+646>:   add    $0x18,%rsp
+   0x00005555555625eb <+650>:   jmp    0x5555555625f2 <ifend_4>
+End of assembler dump.
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) disassemble
+Dump of assembler code for function ifend_4:
+=> 0x00005555555625f2 <+0>:     add    $0x18,%rsp
+   0x00005555555625f6 <+4>:     retq   
+End of assembler dump.
+(gdb) s
+Single stepping until exit from function ifend_4,
+which has no line number information.
+0x00005555555625c2 in ifelse_3 ()
+(gdb) disassemble
+Dump of assembler code for function ifelse_3:
+   0x0000555555562361 <+0>:     mov    0x20(%rsp),%rax
+   0x0000555555562366 <+5>:     mov    %rax,(%rsp)
+   0x000055555556236a <+9>:     mov    0x28(%rsp),%rax
+   0x000055555556236f <+14>:    test   $0x1,%rax
+   0x0000555555562375 <+20>:    mov    $0x7,%ebx
+   0x000055555556237a <+25>:    je     0x555555562010 <throw_error>
+   0x0000555555562380 <+31>:    cmp    $0x0,%rax
+   0x0000555555562384 <+35>:    mov    $0x9,%ebx
+   0x0000555555562389 <+40>:    je     0x555555562010 <throw_error>
+   0x000055555556238f <+46>:    sub    $0x1,%rax
+   0x0000555555562393 <+50>:    mov    %rax,0x8(%rsp)
+   0x0000555555562398 <+55>:    mov    $0x2,%eax
+   0x000055555556239d <+60>:    mov    %rax,%rbx
+   0x00005555555623a0 <+63>:    test   $0x1,%rbx
+   0x00005555555623a7 <+70>:    mov    $0x7,%ebx
+   0x00005555555623ac <+75>:    jne    0x555555562010 <throw_error>
+   0x00005555555623b2 <+81>:    cmp    $0x0,%rax
+   0x00005555555623b6 <+85>:    mov    $0x8,%ebx
+   0x00005555555623bb <+90>:    jl     0x555555562010 <throw_error>
+   0x00005555555623c1 <+96>:    mov    0x8(%rsp),%rbx
+   0x00005555555623c6 <+101>:   mov    (%rbx),%rbx
+   0x00005555555623c9 <+104>:   cmp    %rax,%rbx
+   0x00005555555623cc <+107>:   mov    $0x8,%ebx
+   0x00005555555623d1 <+112>:   jl     0x555555562010 <throw_error>
+   0x00005555555623d7 <+118>:   imul   $0x4,%rax,%rax
+   0x00005555555623db <+122>:   mov    0x8(%rsp),%rbx
+   0x00005555555623e0 <+127>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555623e4 <+131>:   mov    $0x0,%ebx
+   0x00005555555623e9 <+136>:   mov    %rax,%rbx
+   0x00005555555623ec <+139>:   or     (%rsp),%rbx
+   0x00005555555623f0 <+143>:   test   $0x1,%rbx
+   0x00005555555623f7 <+150>:   mov    $0x7,%ebx
+   0x00005555555623fc <+155>:   jne    0x555555562010 <throw_error>
+   0x0000555555562402 <+161>:   cmp    (%rsp),%rax
+   0x0000555555562406 <+165>:   mov    $0x7,%ebx
+   0x000055555556240b <+170>:   mov    $0x3,%eax
+   0x0000555555562410 <+175>:   cmovl  %rbx,%rax
+   0x0000555555562414 <+179>:   cmp    $0x3,%rax
+   0x0000555555562418 <+183>:   je     0x5555555625ed <ifelse_5>
+   0x000055555556241e <+189>:   mov    0x28(%rsp),%rax
+   0x0000555555562423 <+194>:   test   $0x1,%rax
+   0x0000555555562429 <+200>:   mov    $0x7,%ebx
+   0x000055555556242e <+205>:   je     0x555555562010 <throw_error>
+   0x0000555555562434 <+211>:   cmp    $0x0,%rax
+   0x0000555555562438 <+215>:   mov    $0x9,%ebx
+   0x000055555556243d <+220>:   je     0x555555562010 <throw_error>
+   0x0000555555562443 <+226>:   sub    $0x1,%rax
+   0x0000555555562447 <+230>:   mov    %rax,(%rsp)
+   0x000055555556244b <+234>:   mov    $0x2,%eax
+   0x0000555555562450 <+239>:   mov    %rax,%rbx
+   0x0000555555562453 <+242>:   test   $0x1,%rbx
+   0x000055555556245a <+249>:   mov    $0x7,%ebx
+   0x000055555556245f <+254>:   jne    0x555555562010 <throw_error>
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562465 <+260>:   cmp    $0x0,%rax
+   0x0000555555562469 <+264>:   mov    $0x8,%ebx
+   0x000055555556246e <+269>:   jl     0x555555562010 <throw_error>
+   0x0000555555562474 <+275>:   mov    (%rsp),%rbx
+   0x0000555555562478 <+279>:   mov    (%rbx),%rbx
+   0x000055555556247b <+282>:   cmp    %rax,%rbx
+   0x000055555556247e <+285>:   mov    $0x8,%ebx
+   0x0000555555562483 <+290>:   jl     0x555555562010 <throw_error>
+   0x0000555555562489 <+296>:   imul   $0x4,%rax,%rax
+   0x000055555556248d <+300>:   mov    (%rsp),%rbx
+   0x0000555555562491 <+304>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562495 <+308>:   mov    $0x0,%ebx
+   0x000055555556249a <+313>:   mov    %rax,(%rsp)
+   0x000055555556249e <+317>:   mov    0x28(%rsp),%rax
+   0x00005555555624a3 <+322>:   test   $0x1,%rax
+   0x00005555555624a9 <+328>:   mov    $0x7,%ebx
+   0x00005555555624ae <+333>:   je     0x555555562010 <throw_error>
+   0x00005555555624b4 <+339>:   cmp    $0x0,%rax
+   0x00005555555624b8 <+343>:   mov    $0x9,%ebx
+   0x00005555555624bd <+348>:   je     0x555555562010 <throw_error>
+   0x00005555555624c3 <+354>:   sub    $0x1,%rax
+   0x00005555555624c7 <+358>:   mov    %rax,0x8(%rsp)
+   0x00005555555624cc <+363>:   mov    $0x4,%eax
+   0x00005555555624d1 <+368>:   mov    %rax,%rbx
+   0x00005555555624d4 <+371>:   test   $0x1,%rbx
+   0x00005555555624db <+378>:   mov    $0x7,%ebx
+   0x00005555555624e0 <+383>:   jne    0x555555562010 <throw_error>
+   0x00005555555624e6 <+389>:   cmp    $0x0,%rax
+   0x00005555555624ea <+393>:   mov    $0x8,%ebx
+   0x00005555555624ef <+398>:   jl     0x555555562010 <throw_error>
+   0x00005555555624f5 <+404>:   mov    0x8(%rsp),%rbx
+   0x00005555555624fa <+409>:   mov    (%rbx),%rbx
+   0x00005555555624fd <+412>:   cmp    %rax,%rbx
+   0x0000555555562500 <+415>:   mov    $0x8,%ebx
+   0x0000555555562505 <+420>:   jl     0x555555562010 <throw_error>
+   0x000055555556250b <+426>:   imul   $0x4,%rax,%rax
+   0x000055555556250f <+430>:   mov    0x8(%rsp),%rbx
+   0x0000555555562514 <+435>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562518 <+439>:   mov    $0x0,%ebx
+   0x000055555556251d <+444>:   mov    %rax,0x8(%rsp)
+   0x0000555555562522 <+449>:   mov    0x20(%rsp),%rax
+   0x0000555555562527 <+454>:   mov    %rax,0x10(%rsp)
+   0x000055555556252c <+459>:   mov    0x28(%rsp),%rax
+   0x0000555555562531 <+464>:   test   $0x1,%rax
+   0x0000555555562537 <+470>:   mov    $0x7,%ebx
+   0x000055555556253c <+475>:   je     0x555555562010 <throw_error>
+   0x0000555555562542 <+481>:   cmp    $0x0,%rax
+   0x0000555555562546 <+485>:   mov    $0x9,%ebx
+   0x000055555556254b <+490>:   je     0x555555562010 <throw_error>
+   0x0000555555562551 <+496>:   sub    $0x1,%rax
+   0x0000555555562555 <+500>:   mov    %rax,0x18(%rsp)
+   0x000055555556255a <+505>:   mov    $0x6,%eax
+   0x000055555556255f <+510>:   mov    %rax,%rbx
+   0x0000555555562562 <+513>:   test   $0x1,%rbx
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562569 <+520>:   mov    $0x7,%ebx
+   0x000055555556256e <+525>:   jne    0x555555562010 <throw_error>
+   0x0000555555562574 <+531>:   cmp    $0x0,%rax
+   0x0000555555562578 <+535>:   mov    $0x8,%ebx
+   0x000055555556257d <+540>:   jl     0x555555562010 <throw_error>
+   0x0000555555562583 <+546>:   mov    0x18(%rsp),%rbx
+   0x0000555555562588 <+551>:   mov    (%rbx),%rbx
+   0x000055555556258b <+554>:   cmp    %rax,%rbx
+   0x000055555556258e <+557>:   mov    $0x8,%ebx
+   0x0000555555562593 <+562>:   jl     0x555555562010 <throw_error>
+   0x0000555555562599 <+568>:   imul   $0x4,%rax,%rax
+   0x000055555556259d <+572>:   mov    0x18(%rsp),%rbx
+   0x00005555555625a2 <+577>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555625a6 <+581>:   mov    $0x0,%ebx
+   0x00005555555625ab <+586>:   sub    $0x10,%rsp
+   0x00005555555625af <+590>:   mov    %rax,0x8(%rsp)
+   0x00005555555625b4 <+595>:   mov    0x20(%rsp),%rax
+   0x00005555555625b9 <+600>:   mov    %rax,(%rsp)
+   0x00005555555625bd <+604>:   callq  0x555555562051 <insert>
+=> 0x00005555555625c2 <+609>:   add    $0x10,%rsp
+   0x00005555555625c6 <+613>:   sub    $0x18,%rsp
+   0x00005555555625ca <+617>:   mov    %rax,0x10(%rsp)
+   0x00005555555625cf <+622>:   mov    0x20(%rsp),%rax
+   0x00005555555625d4 <+627>:   mov    %rax,0x8(%rsp)
+   0x00005555555625d9 <+632>:   mov    0x18(%rsp),%rax
+   0x00005555555625de <+637>:   mov    %rax,(%rsp)
+   0x00005555555625e2 <+641>:   callq  0x55555556201a <make_node>
+   0x00005555555625e7 <+646>:   add    $0x18,%rsp
+   0x00005555555625eb <+650>:   jmp    0x5555555625f2 <ifend_4>
+End of assembler dump.
+(gdb) s
+Single stepping until exit from function ifelse_3,
+which has no line number information.
+0x000055555556201a in make_node ()
+(gdb) s
+Single stepping until exit from function make_node,
+which has no line number information.
+0x00005555555625e7 in ifelse_3 ()
+(gdb) disassemble
+Dump of assembler code for function ifelse_3:
+   0x0000555555562361 <+0>:     mov    0x20(%rsp),%rax
+   0x0000555555562366 <+5>:     mov    %rax,(%rsp)
+   0x000055555556236a <+9>:     mov    0x28(%rsp),%rax
+   0x000055555556236f <+14>:    test   $0x1,%rax
+   0x0000555555562375 <+20>:    mov    $0x7,%ebx
+   0x000055555556237a <+25>:    je     0x555555562010 <throw_error>
+   0x0000555555562380 <+31>:    cmp    $0x0,%rax
+   0x0000555555562384 <+35>:    mov    $0x9,%ebx
+   0x0000555555562389 <+40>:    je     0x555555562010 <throw_error>
+   0x000055555556238f <+46>:    sub    $0x1,%rax
+   0x0000555555562393 <+50>:    mov    %rax,0x8(%rsp)
+   0x0000555555562398 <+55>:    mov    $0x2,%eax
+   0x000055555556239d <+60>:    mov    %rax,%rbx
+   0x00005555555623a0 <+63>:    test   $0x1,%rbx
+   0x00005555555623a7 <+70>:    mov    $0x7,%ebx
+   0x00005555555623ac <+75>:    jne    0x555555562010 <throw_error>
+   0x00005555555623b2 <+81>:    cmp    $0x0,%rax
+   0x00005555555623b6 <+85>:    mov    $0x8,%ebx
+   0x00005555555623bb <+90>:    jl     0x555555562010 <throw_error>
+   0x00005555555623c1 <+96>:    mov    0x8(%rsp),%rbx
+   0x00005555555623c6 <+101>:   mov    (%rbx),%rbx
+   0x00005555555623c9 <+104>:   cmp    %rax,%rbx
+   0x00005555555623cc <+107>:   mov    $0x8,%ebx
+   0x00005555555623d1 <+112>:   jl     0x555555562010 <throw_error>
+   0x00005555555623d7 <+118>:   imul   $0x4,%rax,%rax
+   0x00005555555623db <+122>:   mov    0x8(%rsp),%rbx
+   0x00005555555623e0 <+127>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555623e4 <+131>:   mov    $0x0,%ebx
+   0x00005555555623e9 <+136>:   mov    %rax,%rbx
+   0x00005555555623ec <+139>:   or     (%rsp),%rbx
+   0x00005555555623f0 <+143>:   test   $0x1,%rbx
+   0x00005555555623f7 <+150>:   mov    $0x7,%ebx
+   0x00005555555623fc <+155>:   jne    0x555555562010 <throw_error>
+   0x0000555555562402 <+161>:   cmp    (%rsp),%rax
+   0x0000555555562406 <+165>:   mov    $0x7,%ebx
+   0x000055555556240b <+170>:   mov    $0x3,%eax
+   0x0000555555562410 <+175>:   cmovl  %rbx,%rax
+   0x0000555555562414 <+179>:   cmp    $0x3,%rax
+   0x0000555555562418 <+183>:   je     0x5555555625ed <ifelse_5>
+   0x000055555556241e <+189>:   mov    0x28(%rsp),%rax
+   0x0000555555562423 <+194>:   test   $0x1,%rax
+   0x0000555555562429 <+200>:   mov    $0x7,%ebx
+   0x000055555556242e <+205>:   je     0x555555562010 <throw_error>
+   0x0000555555562434 <+211>:   cmp    $0x0,%rax
+   0x0000555555562438 <+215>:   mov    $0x9,%ebx
+   0x000055555556243d <+220>:   je     0x555555562010 <throw_error>
+   0x0000555555562443 <+226>:   sub    $0x1,%rax
+   0x0000555555562447 <+230>:   mov    %rax,(%rsp)
+   0x000055555556244b <+234>:   mov    $0x2,%eax
+   0x0000555555562450 <+239>:   mov    %rax,%rbx
+   0x0000555555562453 <+242>:   test   $0x1,%rbx
+   0x000055555556245a <+249>:   mov    $0x7,%ebx
+   0x000055555556245f <+254>:   jne    0x555555562010 <throw_error>
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562465 <+260>:   cmp    $0x0,%rax
+   0x0000555555562469 <+264>:   mov    $0x8,%ebx
+   0x000055555556246e <+269>:   jl     0x555555562010 <throw_error>
+   0x0000555555562474 <+275>:   mov    (%rsp),%rbx
+   0x0000555555562478 <+279>:   mov    (%rbx),%rbx
+   0x000055555556247b <+282>:   cmp    %rax,%rbx
+   0x000055555556247e <+285>:   mov    $0x8,%ebx
+   0x0000555555562483 <+290>:   jl     0x555555562010 <throw_error>
+   0x0000555555562489 <+296>:   imul   $0x4,%rax,%rax
+   0x000055555556248d <+300>:   mov    (%rsp),%rbx
+   0x0000555555562491 <+304>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562495 <+308>:   mov    $0x0,%ebx
+   0x000055555556249a <+313>:   mov    %rax,(%rsp)
+   0x000055555556249e <+317>:   mov    0x28(%rsp),%rax
+   0x00005555555624a3 <+322>:   test   $0x1,%rax
+   0x00005555555624a9 <+328>:   mov    $0x7,%ebx
+   0x00005555555624ae <+333>:   je     0x555555562010 <throw_error>
+   0x00005555555624b4 <+339>:   cmp    $0x0,%rax
+   0x00005555555624b8 <+343>:   mov    $0x9,%ebx
+   0x00005555555624bd <+348>:   je     0x555555562010 <throw_error>
+   0x00005555555624c3 <+354>:   sub    $0x1,%rax
+   0x00005555555624c7 <+358>:   mov    %rax,0x8(%rsp)
+   0x00005555555624cc <+363>:   mov    $0x4,%eax
+   0x00005555555624d1 <+368>:   mov    %rax,%rbx
+   0x00005555555624d4 <+371>:   test   $0x1,%rbx
+   0x00005555555624db <+378>:   mov    $0x7,%ebx
+   0x00005555555624e0 <+383>:   jne    0x555555562010 <throw_error>
+   0x00005555555624e6 <+389>:   cmp    $0x0,%rax
+   0x00005555555624ea <+393>:   mov    $0x8,%ebx
+   0x00005555555624ef <+398>:   jl     0x555555562010 <throw_error>
+   0x00005555555624f5 <+404>:   mov    0x8(%rsp),%rbx
+   0x00005555555624fa <+409>:   mov    (%rbx),%rbx
+   0x00005555555624fd <+412>:   cmp    %rax,%rbx
+   0x0000555555562500 <+415>:   mov    $0x8,%ebx
+   0x0000555555562505 <+420>:   jl     0x555555562010 <throw_error>
+   0x000055555556250b <+426>:   imul   $0x4,%rax,%rax
+   0x000055555556250f <+430>:   mov    0x8(%rsp),%rbx
+   0x0000555555562514 <+435>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562518 <+439>:   mov    $0x0,%ebx
+   0x000055555556251d <+444>:   mov    %rax,0x8(%rsp)
+   0x0000555555562522 <+449>:   mov    0x20(%rsp),%rax
+   0x0000555555562527 <+454>:   mov    %rax,0x10(%rsp)
+   0x000055555556252c <+459>:   mov    0x28(%rsp),%rax
+   0x0000555555562531 <+464>:   test   $0x1,%rax
+   0x0000555555562537 <+470>:   mov    $0x7,%ebx
+   0x000055555556253c <+475>:   je     0x555555562010 <throw_error>
+   0x0000555555562542 <+481>:   cmp    $0x0,%rax
+   0x0000555555562546 <+485>:   mov    $0x9,%ebx
+   0x000055555556254b <+490>:   je     0x555555562010 <throw_error>
+   0x0000555555562551 <+496>:   sub    $0x1,%rax
+   0x0000555555562555 <+500>:   mov    %rax,0x18(%rsp)
+   0x000055555556255a <+505>:   mov    $0x6,%eax
+   0x000055555556255f <+510>:   mov    %rax,%rbx
+   0x0000555555562562 <+513>:   test   $0x1,%rbx
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562569 <+520>:   mov    $0x7,%ebx
+   0x000055555556256e <+525>:   jne    0x555555562010 <throw_error>
+   0x0000555555562574 <+531>:   cmp    $0x0,%rax
+   0x0000555555562578 <+535>:   mov    $0x8,%ebx
+   0x000055555556257d <+540>:   jl     0x555555562010 <throw_error>
+   0x0000555555562583 <+546>:   mov    0x18(%rsp),%rbx
+   0x0000555555562588 <+551>:   mov    (%rbx),%rbx
+   0x000055555556258b <+554>:   cmp    %rax,%rbx
+   0x000055555556258e <+557>:   mov    $0x8,%ebx
+   0x0000555555562593 <+562>:   jl     0x555555562010 <throw_error>
+   0x0000555555562599 <+568>:   imul   $0x4,%rax,%rax
+   0x000055555556259d <+572>:   mov    0x18(%rsp),%rbx
+   0x00005555555625a2 <+577>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555625a6 <+581>:   mov    $0x0,%ebx
+   0x00005555555625ab <+586>:   sub    $0x10,%rsp
+   0x00005555555625af <+590>:   mov    %rax,0x8(%rsp)
+   0x00005555555625b4 <+595>:   mov    0x20(%rsp),%rax
+   0x00005555555625b9 <+600>:   mov    %rax,(%rsp)
+   0x00005555555625bd <+604>:   callq  0x555555562051 <insert>
+   0x00005555555625c2 <+609>:   add    $0x10,%rsp
+   0x00005555555625c6 <+613>:   sub    $0x18,%rsp
+   0x00005555555625ca <+617>:   mov    %rax,0x10(%rsp)
+   0x00005555555625cf <+622>:   mov    0x20(%rsp),%rax
+   0x00005555555625d4 <+627>:   mov    %rax,0x8(%rsp)
+   0x00005555555625d9 <+632>:   mov    0x18(%rsp),%rax
+   0x00005555555625de <+637>:   mov    %rax,(%rsp)
+   0x00005555555625e2 <+641>:   callq  0x55555556201a <make_node>
+=> 0x00005555555625e7 <+646>:   add    $0x18,%rsp
+   0x00005555555625eb <+650>:   jmp    0x5555555625f2 <ifend_4>
+End of assembler dump.
+(gdb) ni
+0x00005555555625eb in ifelse_3 ()
+(gdb) disassemble
+Dump of assembler code for function ifelse_3:
+   0x0000555555562361 <+0>:     mov    0x20(%rsp),%rax
+   0x0000555555562366 <+5>:     mov    %rax,(%rsp)
+   0x000055555556236a <+9>:     mov    0x28(%rsp),%rax
+   0x000055555556236f <+14>:    test   $0x1,%rax
+   0x0000555555562375 <+20>:    mov    $0x7,%ebx
+   0x000055555556237a <+25>:    je     0x555555562010 <throw_error>
+   0x0000555555562380 <+31>:    cmp    $0x0,%rax
+   0x0000555555562384 <+35>:    mov    $0x9,%ebx
+   0x0000555555562389 <+40>:    je     0x555555562010 <throw_error>
+   0x000055555556238f <+46>:    sub    $0x1,%rax
+   0x0000555555562393 <+50>:    mov    %rax,0x8(%rsp)
+   0x0000555555562398 <+55>:    mov    $0x2,%eax
+   0x000055555556239d <+60>:    mov    %rax,%rbx
+   0x00005555555623a0 <+63>:    test   $0x1,%rbx
+   0x00005555555623a7 <+70>:    mov    $0x7,%ebx
+   0x00005555555623ac <+75>:    jne    0x555555562010 <throw_error>
+   0x00005555555623b2 <+81>:    cmp    $0x0,%rax
+   0x00005555555623b6 <+85>:    mov    $0x8,%ebx
+   0x00005555555623bb <+90>:    jl     0x555555562010 <throw_error>
+   0x00005555555623c1 <+96>:    mov    0x8(%rsp),%rbx
+   0x00005555555623c6 <+101>:   mov    (%rbx),%rbx
+   0x00005555555623c9 <+104>:   cmp    %rax,%rbx
+   0x00005555555623cc <+107>:   mov    $0x8,%ebx
+   0x00005555555623d1 <+112>:   jl     0x555555562010 <throw_error>
+   0x00005555555623d7 <+118>:   imul   $0x4,%rax,%rax
+   0x00005555555623db <+122>:   mov    0x8(%rsp),%rbx
+   0x00005555555623e0 <+127>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555623e4 <+131>:   mov    $0x0,%ebx
+   0x00005555555623e9 <+136>:   mov    %rax,%rbx
+   0x00005555555623ec <+139>:   or     (%rsp),%rbx
+   0x00005555555623f0 <+143>:   test   $0x1,%rbx
+   0x00005555555623f7 <+150>:   mov    $0x7,%ebx
+   0x00005555555623fc <+155>:   jne    0x555555562010 <throw_error>
+   0x0000555555562402 <+161>:   cmp    (%rsp),%rax
+   0x0000555555562406 <+165>:   mov    $0x7,%ebx
+   0x000055555556240b <+170>:   mov    $0x3,%eax
+   0x0000555555562410 <+175>:   cmovl  %rbx,%rax
+   0x0000555555562414 <+179>:   cmp    $0x3,%rax
+   0x0000555555562418 <+183>:   je     0x5555555625ed <ifelse_5>
+   0x000055555556241e <+189>:   mov    0x28(%rsp),%rax
+   0x0000555555562423 <+194>:   test   $0x1,%rax
+   0x0000555555562429 <+200>:   mov    $0x7,%ebx
+   0x000055555556242e <+205>:   je     0x555555562010 <throw_error>
+   0x0000555555562434 <+211>:   cmp    $0x0,%rax
+   0x0000555555562438 <+215>:   mov    $0x9,%ebx
+   0x000055555556243d <+220>:   je     0x555555562010 <throw_error>
+   0x0000555555562443 <+226>:   sub    $0x1,%rax
+   0x0000555555562447 <+230>:   mov    %rax,(%rsp)
+   0x000055555556244b <+234>:   mov    $0x2,%eax
+   0x0000555555562450 <+239>:   mov    %rax,%rbx
+   0x0000555555562453 <+242>:   test   $0x1,%rbx
+   0x000055555556245a <+249>:   mov    $0x7,%ebx
+   0x000055555556245f <+254>:   jne    0x555555562010 <throw_error>
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562465 <+260>:   cmp    $0x0,%rax
+   0x0000555555562469 <+264>:   mov    $0x8,%ebx
+   0x000055555556246e <+269>:   jl     0x555555562010 <throw_error>
+   0x0000555555562474 <+275>:   mov    (%rsp),%rbx
+   0x0000555555562478 <+279>:   mov    (%rbx),%rbx
+   0x000055555556247b <+282>:   cmp    %rax,%rbx
+   0x000055555556247e <+285>:   mov    $0x8,%ebx
+   0x0000555555562483 <+290>:   jl     0x555555562010 <throw_error>
+   0x0000555555562489 <+296>:   imul   $0x4,%rax,%rax
+   0x000055555556248d <+300>:   mov    (%rsp),%rbx
+   0x0000555555562491 <+304>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562495 <+308>:   mov    $0x0,%ebx
+   0x000055555556249a <+313>:   mov    %rax,(%rsp)
+   0x000055555556249e <+317>:   mov    0x28(%rsp),%rax
+   0x00005555555624a3 <+322>:   test   $0x1,%rax
+   0x00005555555624a9 <+328>:   mov    $0x7,%ebx
+   0x00005555555624ae <+333>:   je     0x555555562010 <throw_error>
+   0x00005555555624b4 <+339>:   cmp    $0x0,%rax
+   0x00005555555624b8 <+343>:   mov    $0x9,%ebx
+   0x00005555555624bd <+348>:   je     0x555555562010 <throw_error>
+   0x00005555555624c3 <+354>:   sub    $0x1,%rax
+   0x00005555555624c7 <+358>:   mov    %rax,0x8(%rsp)
+   0x00005555555624cc <+363>:   mov    $0x4,%eax
+   0x00005555555624d1 <+368>:   mov    %rax,%rbx
+   0x00005555555624d4 <+371>:   test   $0x1,%rbx
+   0x00005555555624db <+378>:   mov    $0x7,%ebx
+   0x00005555555624e0 <+383>:   jne    0x555555562010 <throw_error>
+   0x00005555555624e6 <+389>:   cmp    $0x0,%rax
+   0x00005555555624ea <+393>:   mov    $0x8,%ebx
+   0x00005555555624ef <+398>:   jl     0x555555562010 <throw_error>
+   0x00005555555624f5 <+404>:   mov    0x8(%rsp),%rbx
+   0x00005555555624fa <+409>:   mov    (%rbx),%rbx
+   0x00005555555624fd <+412>:   cmp    %rax,%rbx
+   0x0000555555562500 <+415>:   mov    $0x8,%ebx
+   0x0000555555562505 <+420>:   jl     0x555555562010 <throw_error>
+   0x000055555556250b <+426>:   imul   $0x4,%rax,%rax
+   0x000055555556250f <+430>:   mov    0x8(%rsp),%rbx
+   0x0000555555562514 <+435>:   mov    (%rbx,%rax,1),%rax
+   0x0000555555562518 <+439>:   mov    $0x0,%ebx
+   0x000055555556251d <+444>:   mov    %rax,0x8(%rsp)
+   0x0000555555562522 <+449>:   mov    0x20(%rsp),%rax
+   0x0000555555562527 <+454>:   mov    %rax,0x10(%rsp)
+   0x000055555556252c <+459>:   mov    0x28(%rsp),%rax
+   0x0000555555562531 <+464>:   test   $0x1,%rax
+   0x0000555555562537 <+470>:   mov    $0x7,%ebx
+   0x000055555556253c <+475>:   je     0x555555562010 <throw_error>
+   0x0000555555562542 <+481>:   cmp    $0x0,%rax
+   0x0000555555562546 <+485>:   mov    $0x9,%ebx
+   0x000055555556254b <+490>:   je     0x555555562010 <throw_error>
+   0x0000555555562551 <+496>:   sub    $0x1,%rax
+   0x0000555555562555 <+500>:   mov    %rax,0x18(%rsp)
+   0x000055555556255a <+505>:   mov    $0x6,%eax
+   0x000055555556255f <+510>:   mov    %rax,%rbx
+   0x0000555555562562 <+513>:   test   $0x1,%rbx
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000555555562569 <+520>:   mov    $0x7,%ebx
+   0x000055555556256e <+525>:   jne    0x555555562010 <throw_error>
+   0x0000555555562574 <+531>:   cmp    $0x0,%rax
+   0x0000555555562578 <+535>:   mov    $0x8,%ebx
+   0x000055555556257d <+540>:   jl     0x555555562010 <throw_error>
+   0x0000555555562583 <+546>:   mov    0x18(%rsp),%rbx
+   0x0000555555562588 <+551>:   mov    (%rbx),%rbx
+   0x000055555556258b <+554>:   cmp    %rax,%rbx
+   0x000055555556258e <+557>:   mov    $0x8,%ebx
+   0x0000555555562593 <+562>:   jl     0x555555562010 <throw_error>
+   0x0000555555562599 <+568>:   imul   $0x4,%rax,%rax
+   0x000055555556259d <+572>:   mov    0x18(%rsp),%rbx
+   0x00005555555625a2 <+577>:   mov    (%rbx,%rax,1),%rax
+   0x00005555555625a6 <+581>:   mov    $0x0,%ebx
+   0x00005555555625ab <+586>:   sub    $0x10,%rsp
+   0x00005555555625af <+590>:   mov    %rax,0x8(%rsp)
+   0x00005555555625b4 <+595>:   mov    0x20(%rsp),%rax
+   0x00005555555625b9 <+600>:   mov    %rax,(%rsp)
+   0x00005555555625bd <+604>:   callq  0x555555562051 <insert>
+   0x00005555555625c2 <+609>:   add    $0x10,%rsp
+   0x00005555555625c6 <+613>:   sub    $0x18,%rsp
+   0x00005555555625ca <+617>:   mov    %rax,0x10(%rsp)
+   0x00005555555625cf <+622>:   mov    0x20(%rsp),%rax
+   0x00005555555625d4 <+627>:   mov    %rax,0x8(%rsp)
+   0x00005555555625d9 <+632>:   mov    0x18(%rsp),%rax
+   0x00005555555625de <+637>:   mov    %rax,(%rsp)
+   0x00005555555625e2 <+641>:   callq  0x55555556201a <make_node>
+   0x00005555555625e7 <+646>:   add    $0x18,%rsp
+=> 0x00005555555625eb <+650>:   jmp    0x5555555625f2 <ifend_4>
+End of assembler dump.
+(gdb) si
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) disassemble
+Dump of assembler code for function ifend_4:
+=> 0x00005555555625f2 <+0>:     add    $0x18,%rsp
+   0x00005555555625f6 <+4>:     retq   
+End of assembler dump.
+(gdb) s
+Single stepping until exit from function ifend_4,
+which has no line number information.
+Warning:
+Cannot insert breakpoint 0.
+Cannot access memory at address 0xe
+
+0x00007ffff75e6080 in ?? ()
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/ppaleja/egg-eater/test/bst-full.run 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 2, 0x00005555555628b3 in our_code_starts_here ()
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 6, 0x0000555555562361 in ifelse_3 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) disassemble
+Dump of assembler code for function ifend_4:
+=> 0x00005555555625f2 <+0>:     add    $0x18,%rsp
+   0x00005555555625f6 <+4>:     retq   
+End of assembler dump.
+(gdb) ni
+0x00005555555625f6 in ifend_4 ()
+(gdb) si
+0x00007ffff75e6080 in ?? ()
+(gdb) disassemble
+No function contains program counter for selected frame.
+(gdb) ni
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff75e6080 in ?? ()
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/ppaleja/egg-eater/test/bst-full.run 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 2, 0x00005555555628b3 in our_code_starts_here ()
+(gdb) ni
+0x00005555555628b6 in our_code_starts_here ()
+(gdb) 
+0x00005555555628ba in our_code_starts_here ()
+(gdb) 
+0x00005555555628bf in our_code_starts_here ()
+(gdb) c
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 6, 0x0000555555562361 in ifelse_3 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) 
+Continuing.
+
+Breakpoint 5, 0x00005555555625f2 in ifend_4 ()
+(gdb) disassemble
+Dump of assembler code for function ifend_4:
+=> 0x00005555555625f2 <+0>:     add    $0x18,%rsp
+   0x00005555555625f6 <+4>:     retq   
+End of assembler dump.
+(gdb) ni
+0x00005555555625f6 in ifend_4 ()
+(gdb) disassemble
+Dump of assembler code for function ifend_4:
+   0x00005555555625f2 <+0>:     add    $0x18,%rsp
+=> 0x00005555555625f6 <+4>:     retq   
+End of assembler dump.
+(gdb) ni
+0x00007ffff75e6080 in ?? ()
+(gdb) disassemble
+No function contains program counter for selected frame.
+(gdb) 

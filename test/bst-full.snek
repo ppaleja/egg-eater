@@ -2,20 +2,23 @@
 (fun (make_node value left right)
   (tuple value left right))
 
-; Function to insert an element into a binary search tree
+
 (fun (insert value tree)
-  (if (< value (index 1 tree))
-    (make_node (index 1 tree) (insert value (index 2 tree)) (index 3 tree))
-    (if (> value (index 1 tree))
-      (make_node (index 1 tree) (index 2 tree) (insert value (index 3 tree)))
-      tree)))
+  (if (= tree nil)
+    (make_node value nil nil)
+    (if (< value (index tree 1))
+      (make_node (index tree 1) (insert value (index tree 2)) (index tree 3))
+      (if (> value (index tree 1))
+        (make_node (index tree 1) (index tree 2) (insert value (index tree 3)))
+        tree))))
 
 ; Function to check if an element exists in a binary search tree
 (fun (contains? value tree)
-  (if tree
-    (let (node_value (index 1 tree)) (
-      let (left_tree (index 2 tree)) (
-        let (right_tree (index 3 tree)) (
+  (if (= tree nil)
+    false
+    (let (node_value (index tree 1)) (
+      let (left_tree (index tree 2)) (
+        let (right_tree (index tree 3)) (
           if (= value node_value)
           true
           (if (< value node_value)
@@ -24,9 +27,9 @@
         )
       )
     ))
-    false
   )
 )
+
 
 ; Test: Create a binary search tree, insert an element, and check if it exists in the tree
 (let (tree (make_node 5 nil nil)) (block
@@ -34,6 +37,4 @@
   (set! tree (insert 7 tree))
   (set! tree (insert 1 tree))
   (set! tree (insert 9 tree))
-  (print (contains? 3 tree))) ; Check if 3 is in the tree
-
-)
+))
