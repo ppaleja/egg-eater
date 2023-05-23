@@ -1,0 +1,15 @@
+; Define the point structure
+(fun (make_point x y)
+  (tuple x y))
+
+; Define a function to add two points
+(fun (add_points point1 point2)
+  (make_point (+ (index point1 1) (index point2 1))
+              (+ (index point1 2) (index point2 2))))
+
+; Test the functions
+(block 
+  (print (add_points (make_point 2 3) (make_point 4 5)))
+  (print (add_points (make_point 2 3) (make_point -1 8)))
+  (print (add_points (make_point 4 5) (make_point -1 8)))
+)

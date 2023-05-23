@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 im = "15.1.0"
 sexp = "1.1.4"
+prettydiff = "0.1"

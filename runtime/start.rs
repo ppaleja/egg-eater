@@ -11,44 +11,56 @@ extern "C" {
 #[no_mangle]
 #[export_name = "\x01snek_error"]
 pub fn snek_error(errcode : i64) {
-  eprintln!("An error occurred {}", errcode);
-  std::process::exit(1);
+    eprintln!("An error occurred {}", errcode);
+    std::process::exit(1);
 }
 
 // let's change snek_str to print ... when it visits a cyclic value
 fn snek_str(val : i64, seen : &mut Vec<i64>) -> String {
-  if val == 7 { "true".to_string() }
-  else if val == 3 { "false".to_string() }
-  else if val % 2 == 0 { format!("{}", val >> 1) }
-  else if val == 1 { "nil".to_string() }
-  else if val & 1 == 1 {
-    if seen.contains(&val)  { return "(pair <cyclic>)".to_string() }
-    seen.push(val);
-    let addr = (val - 1) as *const i64;
-    let fst = unsafe { *addr };
-    let snd = unsafe { *addr.offset(1) };
-    let result = format!("(pair {} {})", snek_str(fst, seen), snek_str(snd, seen));
-    seen.pop();
-    return result;
-  }
-  else {
-    format!("Unknown value: {}", val)
-  }
+    if val == 7 { "true".to_string() }
+    else if val == 3 { "false".to_string() }
+    else if val % 2 == 0 { format!("{}", val >> 1) }
+    else if val == 1 { "nil".to_string() }
+    else if val & 1 == 1 {
+        if seen.contains(&val)  { return "(pair <cyclic>)".to_string() }
+        seen.push(val);
+        let addr = (val - 1) as *const i64;
+        
+        // Note: pair will NOT print correctly anymore
+        let size: i64 = unsafe { *addr } / 2;
+        let mut result = "(tuple".to_string();
+        for i in 1..(size + 1) {
+            let el = unsafe { *addr.offset(i as isize) };
+            result += format!(" {}", snek_str(el, seen)).as_str();
+        }
+        seen.pop();
+        result + ")"
+
+
+        // let fst = unsafe { *addr };
+        // let snd = unsafe { *addr.offset(2) };
+        // let result = format!("(pair {} {})", snek_str(fst, seen), snek_str(snd, seen));
+        // seen.pop();
+        // return result;
+    }
+    else {
+        format!("Unknown value: {}", val)
+    }
 }
 
 #[no_mangle]
 #[export_name = "\x01snek_print"]
 fn snek_print(val : i64) -> i64 {
-  let mut seen = Vec::<i64>::new();
-  println!("{}", snek_str(val, &mut seen));
-  return val;
+    let mut seen = Vec::<i64>::new();
+    println!("{}", snek_str(val, &mut seen));
+    return val;
 }
 fn parse_arg(v : &Vec<String>) -> i64 {
-  if v.len() < 2 { return 1 }
-  let s = &v[1];
-  if s == "true" { 3 }
-  else if s == "false" { 1 }
-  else { s.parse::<i64>().unwrap() << 1 }
+    if v.len() < 2 { return 1 }
+    let s = &v[1];
+    if s == "true" { 3 }
+    else if s == "false" { 1 }
+    else { s.parse::<i64>().unwrap() << 1 }
 }
 
 fn main() {

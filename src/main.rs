@@ -35,6 +35,7 @@ enum Expr {
     Id(String),
     Eq(Box<Expr>, Box<Expr>),
     Lt(Box<Expr>, Box<Expr>),
+    Gt(Box<Expr>, Box<Expr>),
     If(Box<Expr>, Box<Expr>, Box<Expr>),
     Loop(Box<Expr>),
     Block(Vec<Expr>),
@@ -46,6 +47,8 @@ enum Expr {
     Call2(String, Box<Expr>, Box<Expr>),
     Call3(String, Box<Expr>, Box<Expr>, Box<Expr>),
 
+    Tuple(Vec<Expr>),
+    Index(Box<Expr>, Box<Expr>),
     Pair(Box<Expr>, Box<Expr>),
     Fst(Box<Expr>),
     Snd(Box<Expr>),
@@ -54,6 +57,7 @@ enum Expr {
 }
 
 fn parse_expr(s: &Sexp) -> Expr {
+        // dbg!(s);
     match s {
         Sexp::Atom(I(n)) => Expr::Num(i32::try_from(*n).unwrap()),
         Sexp::Atom(S(name)) if name == "true" => Expr::True,
@@ -73,6 +77,15 @@ fn parse_expr(s: &Sexp) -> Expr {
             }
             [Sexp::Atom(S(op)), e1, e2] if op == "pair" => {
                 Expr::Pair(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
+            }
+            [Sexp::Atom(S(op)), tup, idx] if op == "index" => {
+                Expr::Index(Box::new(parse_expr(tup)), Box::new(parse_expr(idx)))
+            }
+            [Sexp::Atom(S(op)), exprs @ ..] if op == "tuple" => {
+                let elements = exprs.iter()
+                .map(|expr| parse_expr(expr))
+                .collect::<Vec<Expr>>();
+                Expr::Tuple(elements)
             }
             [Sexp::Atom(S(op)), e1, e2] if op == "setfst!" => {
                 Expr::SetFst(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
@@ -94,6 +107,9 @@ fn parse_expr(s: &Sexp) -> Expr {
             }
             [Sexp::Atom(S(op)), e1, e2] if op == "<" => {
                 Expr::Lt(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
+            },
+            [Sexp::Atom(S(op)), e1, e2] if op == ">" => {
+                Expr::Gt(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
             }
             [Sexp::Atom(S(keyword)), Sexp::List(vec), body] if keyword == "let" => match &vec[..] {
                 [Sexp::Atom(S(name)), val] => Expr::Let(
@@ -101,7 +117,7 @@ fn parse_expr(s: &Sexp) -> Expr {
                     Box::new(parse_expr(val)),
                     Box::new(parse_expr(body)),
                 ),
-                _ => panic!("parse error"),
+                _ => panic!("let parse error"),
             },
             [Sexp::Atom(S(keyword)), cond, thn, els] if keyword == "if" => Expr::If(
                 Box::new(parse_expr(cond)),
@@ -202,8 +218,7 @@ fn compile_expr(
     brake: &String,
     l: &mut i32,
 ) -> String {
-    println!("Compiling");
-    dbg!(e);
+    // println!("Compiling");
     match e {
         Expr::Num(n) => format!("mov rax, {}", *n << 1),
         Expr::True => format!("mov rax, {}", 3),
@@ -309,6 +324,28 @@ fn compile_expr(
             "
             )
         }
+        Expr::Gt(e1, e2) => {
+            let e1_instrs = compile_expr(e1, si, env, brake, l);
+            let e2_instrs = compile_expr(e2, si + 1, env, brake, l);
+            let offset = si * 8;
+            format!(
+                "
+                {e1_instrs}
+                mov [rsp + {offset}], rax
+                {e2_instrs}
+                mov rbx, rax
+                or rbx, [rsp + {offset}]
+                test rbx, 1
+                mov rbx, 7
+                jne throw_error
+                cmp rax, [rsp + {offset}]
+                mov rbx, {TRUE_VAL}
+                mov rax, {FALSE_VAL}
+                cmovl rax, rbx
+            "
+            )
+        }
+
         Expr::Eq(e1, e2) => {
             let e1_instrs = compile_expr(e1, si, env, brake, l);
             let e2_instrs = compile_expr(e2, si + 1, env, brake, l);
@@ -478,10 +515,109 @@ fn compile_expr(
             call {name}
             mov rdi, [rsp+24]
             add rsp, {offset}
-        "
-        )
-    }
+            "
+            )
+        }
 
+        Expr::Tuple(exprs) => {
+            let mut instrs = format!("; Making pair {exprs:?}");
+
+            let expr_is = exprs
+            .iter()
+            .map(|(expr)|
+            compile_expr(expr, si, env, brake, l));
+
+            // We want to have this:
+            // [r15]: exprs.len()
+            // [r15 + 8]: exprs[0]
+            // [r15 + 16]: exprs[1]
+            // ...
+
+            // We want to add the size of the array as a value to the beginning:
+            // TODO: Does this need to be in the same value format???
+            // TODO: I don't think so, but i'm not quite sure
+            let size = exprs.len() as i64 * 2;
+            instrs += format!("
+            ; Push the size of the tuple to the first mem address
+            mov rax, {size}
+            mov [r15], rax
+            ").as_str();
+
+            for (i, e_is) in expr_is.enumerate() {
+                
+                // If we do the expr instructions
+                instrs += &e_is.as_str();
+                // Now rax has the last value in the array after everything
+                let curr_word = 8 * (i + 1);
+                // For a pair, this ^ does 
+                // i = 0 | mov r15 + (8 * (2 - 0) = 16), rax=expr2
+                // i = 1 | mov r15 + (8 * (2 - 1) = 8), rax=expr1
+
+                // So we push the answer from rax to the heap
+                instrs += format!("
+                    mov [r15 + {curr_word}], rax
+                ").as_str();
+
+            }
+            
+            // Remember, we allocated 1 extra word for the len, so we have to account for that.
+            let mem_allocated = (size + 1) * 8;
+            instrs += format!("
+                mov rax, r15
+                add rax, 1
+                add r15, {mem_allocated}
+            ").as_str();
+
+            instrs
+        }
+
+        Expr::Index(tup, idx) => {
+            let mut instrs = "; Compiling index\n".to_string();
+            let tup_is = compile_expr(tup, si, env, brake, l);
+            let tup_offset = si * 8;
+            let idx_is = compile_expr(idx, si + 1, env, brake, l);
+
+            // Think we'll need to use 2 registers here perhaps?
+            // Should make sure $rbx is 0d out
+
+            instrs += format!("
+                {tup_is}
+                sub rax, 1
+                mov [rsp + {tup_offset}], rax
+                {idx_is}
+            ").as_str();           
+            // So now [rsp + {tup_offset}] has the mem address of the tuple
+            // and the evaluated idx is in rax
+
+            // TODO: Type check for idx here
+            // TODO: Check for out of bounds here.
+            // Out of bounds happens when ([[rsp + tup_offset]] = len) < idx
+
+            instrs += format!("
+                ; [rsp + {tup_offset}] has the heap location for the tuple
+                mov rbx, [rsp + {tup_offset}]
+                
+                ; [[rsp + {tup_offset}]] has the 0th value (which is len)
+                mov rbx, [rbx]
+
+                ; rbx < rax => 2len < 2idx => len < idx
+                cmp rbx, rax
+                mov rbx, 8
+                jl throw_error
+
+                ; rax should still have 2idx, to get a word value, we mul by 4.
+                imul rax, 4
+                
+                ; [rsp + {tup_offset}] should have the heap location
+                mov rbx, [rsp + {tup_offset}]
+                mov rax, [rbx + rax]
+                mov rbx, 0
+            ").as_str();
+
+            instrs
+        }
+        // I don't think we need to follow the pattern here of storing the result each time,
+        // We can just put the thing in the place.
         Expr::Pair(e1, e2) => {
             let e1is = compile_expr(e1, si, env, brake, l);
             let e2is = compile_expr(e2, si + 1, env, brake, l);
@@ -501,6 +637,8 @@ fn compile_expr(
             "
             )
         }
+
+        
 
         Expr::Fst(e) => {
             let eis = compile_expr(e, si, env, brake, l);
@@ -553,6 +691,8 @@ fn compile_expr(
             "
             )
         },
+        Expr::Tuple(_) => todo!(),
+        Expr::Index(_, _) => todo!(),
         
     }
 }
@@ -571,6 +711,7 @@ fn depth(e: &Expr) -> i32 {
         Expr::Let(_, expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Id(_) => 0,
         Expr::Lt(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
+        Expr::Gt(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Eq(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::If(expr1, expr2, expr3) => depth(expr1).max(depth(expr2)).max(depth(expr3)),
         Expr::Loop(expr) => depth(expr),
@@ -586,6 +727,17 @@ fn depth(e: &Expr) -> i32 {
         Expr::Snd(expr) => depth(expr),
         Expr::SetFst(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::SetSnd(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
+        Expr::Tuple(exprs) => {
+            let mut max = 0;
+            for (i, expr) in exprs.iter().enumerate() {
+                let tmp = depth(expr);
+                if max < tmp {
+                    max = tmp;
+                }
+            }
+            max
+        },
+        Expr::Index(tup, idx) => depth(tup).max(depth(idx)),
     }
 }
 
