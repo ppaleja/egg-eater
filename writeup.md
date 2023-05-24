@@ -10,9 +10,8 @@ This is the design document for the **Egg Eater** language. It builds on syntax 
 | `<expr>`     | `<number>`                                           |
 |              | `true`                                               |
 |              | `false`                                              |
-|              | `input`  
-|
-|			   | `nil` **(*new)**                                            |
+|              | `input`  |
+|		| `nil` **(*new)**                                            |
 |              | `<identifier>`                                       |
 |              | `(let <binding> <expr>)`                         |
 |              | `(<op1> <expr>)`                                     |
@@ -27,14 +26,15 @@ This is the design document for the **Egg Eater** language. It builds on syntax 
 |              | `(index <expr> <expr>)`**(*new)**                              |
 | `<op1>`      | `add1`                                               |
 |              | `sub1`                                               |
-|              | `isnum`                                              |                                           |
+|              | `isnum`                                              |                                           
 |              | `print`                                              |
 | `<op2>`      | `-`                                                  |
 |              | `+`                                                  |
-|              | `<`        
-|    		   | `>`                                                                                                                                                          
+|              | `<`        |
+|    		| `>`                                                |                                                                                                          
 |              | `=`                                                  |
 | `<binding>`  | `(<identifier> <expr>)`                              |
+
 As you can see, we've added two primitive expressions and one primitive value:
 
  - `tuple <expr+>`Allocates memory on the heap for an arbitrary number of `expr`'s which are then stored contiguously. The expression evaluates to the address at which the data can be located using `index`. Empty `tuples` are not allowed, and causes a parsing error. Pointer arithmetic is not allowed and will cause a runtime exception. Equality using the `=` is based on *reference equality*, i.e. `(= tup1 tup2)` evaluates to `true` if both point to the same address.
@@ -77,12 +77,14 @@ Below is a diagram depicting how our language arranges heap-allocated values and
     )) 
   ### Output:
   ![simple.png](https://www.dropbox.com/s/k8vlnuy5zbanwa4/simple.png?dl=0&raw=1)
+  
   This program constructs a `tuple` called `tup` and then indexes it at `2`. Notice that when we call `(index tup 0)`, we get the length of the array.
  ## Example: Runtime tag-checking error.
  ### Code:
     (index 10 10)
 ### Output:
 ![err-tag.png](https://www.dropbox.com/s/b0gu9emigjx2grj/err-tag.png?dl=0&raw=1)
+
 Here, we try to index something that is not a `tuple`. We get an illegal argument error.
 ## Example: Indexing out-of-bounds
 ### Code:
@@ -94,12 +96,14 @@ Here, we try to index something that is not a `tuple`. We get an illegal argumen
     ))
 ### Output
 ![errbounds.png](https://www.dropbox.com/s/crirvs5cw736veu/errbounds.png?dl=0&raw=1)
+
 Here we correctly index the `tuple`, `tup`, but on the last line we try to get the 6th element, which is outside the bounds of the `tuple`, giving a runtime error.
 ## Example: Indexing a `nil` pointer.
 ### Code:
     (index nil 0)
 ### Output:
 ![err3.png](https://www.dropbox.com/s/wiryxydmvyp45gf/err3.png?dl=0&raw=1)
+
 Here we try to index a `nil` pointer, which gives a runtime error.
 ## Example: Points
 ### Code:
@@ -122,6 +126,7 @@ Here we try to index a `nil` pointer, which gives a runtime error.
     )
 ### Output:
 ![points.png](https://www.dropbox.com/s/divltffhcof5xwe/points.png?dl=0&raw=1)
+
  Here we have a program with a function that takes an `x` and a `y` coordinate and produces a tuple with those values, and a function that takes two points and returns a new point with their `x` and `y` coordinates added together. We show how we can make points and add them together.
 ## Example: Binary Search Tree
 ### Code:
@@ -165,26 +170,27 @@ Here we try to index a `nil` pointer, which gives a runtime error.
     ))
 ### Output:
 ![bst.png](https://www.dropbox.com/s/e2y9m53h17gkut8/bst.png?dl=0&raw=1)
+
 An implemtation of the binary search tree data structure using our `tuple` expression. Note that when calling `insert`, we create a new node using the information of the last tree, so each time we are allocating a new tree, not updating the existing one. We include some tests of the various functions, which both add to both sides of the BST and check for contains in the root, leafs, and body of the tree for elements that are/are not there.
 ## Similarities/differences to other programming languages
 - MATLAB:
--- Arrays allocated contiguously in memory,
--- Arrays must contain elements of the same type,
--- Indexed starting at 1,
--- Len is always known by the array,
+	- Arrays allocated contiguously in memory,
+	- Arrays must contain elements of the same type,
+	- Indexed starting at 1,
+	- Len is always known by the array,
 - C:
--- Arrays allocated contiguously in memory,
--- Arrays must contain elements of the same type,
--- Indexed starting at 0,
--- Len is NOT always known by the array (unfortunately for Wells Fargo),
+	- Arrays allocated contiguously in memory,
+	- Arrays must contain elements of the same type,
+	- Indexed starting at 0,
+	- Len is NOT always known by the array (unfortunately for Wells Fargo),
 
 Based on this comparison, our language is more similar to MATLAB in how it supports heap-allocated data, as it has all the above characteristics EXCEPT that our tuples can have different types of elements in it simultaneously.
 ## Resources
 - The tests were constructed with ChatGPT using the prompts from the egg eater [test specs](https://ucsd-compilers-s23.github.io/week67/index.html). 
 - As mentioned the start-off point for this codebas is from the [CSE 231 Diamondback Language](https://github.com/ucsd-compilers-s23/lecture1/tree/egg-eater).
 - The following EdStem posts were used by the author for help and information:
---https://edstem.org/us/courses/38748/discussion/3152183
---https://edstem.org/us/courses/38748/discussion/3150092
---https://edstem.org/us/courses/38748/discussion/3150044
---https://edstem.org/us/courses/38748/discussion/3142607
+	- https://edstem.org/us/courses/38748/discussion/3152183
+	- https://edstem.org/us/courses/38748/discussion/3150092
+	- https://edstem.org/us/courses/38748/discussion/3150044
+	- https://edstem.org/us/courses/38748/discussion/3142607
  
