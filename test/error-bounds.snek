@@ -1,0 +1,6 @@
+(let (tup (tuple 11 102 53 42 15)) (block 
+    (print tup)
+    (print (index tup 2))
+    (print (index tup 0))
+    (print (index tup 6))
+))

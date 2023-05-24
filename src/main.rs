@@ -49,11 +49,6 @@ enum Expr {
 
     Tuple(Vec<Expr>),
     Index(Box<Expr>, Box<Expr>),
-    Pair(Box<Expr>, Box<Expr>),
-    Fst(Box<Expr>),
-    Snd(Box<Expr>),
-    SetFst(Box<Expr>, Box<Expr>),
-    SetSnd(Box<Expr>, Box<Expr>),
 }
 
 fn parse_expr(s: &Sexp) -> Expr {
@@ -67,16 +62,11 @@ fn parse_expr(s: &Sexp) -> Expr {
             [Sexp::Atom(S(op)), e] if op == "add1" => Expr::Add1(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e] if op == "sub1" => Expr::Sub1(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e] if op == "isnum" => Expr::IsNum(Box::new(parse_expr(e))),
-            [Sexp::Atom(S(op)), e] if op == "fst" => Expr::Fst(Box::new(parse_expr(e))),
-            [Sexp::Atom(S(op)), e] if op == "snd" => Expr::Snd(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e1, e2] if op == "+" => {
                 Expr::Plus(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
             }
             [Sexp::Atom(S(op)), e1, e2] if op == "-" => {
                 Expr::Minus(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
-            }
-            [Sexp::Atom(S(op)), e1, e2] if op == "pair" => {
-                Expr::Pair(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
             }
             [Sexp::Atom(S(op)), tup, idx] if op == "index" => {
                 Expr::Index(Box::new(parse_expr(tup)), Box::new(parse_expr(idx)))
@@ -86,12 +76,6 @@ fn parse_expr(s: &Sexp) -> Expr {
                 .map(|expr| parse_expr(expr))
                 .collect::<Vec<Expr>>();
                 Expr::Tuple(elements)
-            }
-            [Sexp::Atom(S(op)), e1, e2] if op == "setfst!" => {
-                Expr::SetFst(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
-            }
-            [Sexp::Atom(S(op)), e1, e2] if op == "setsnd!" => {
-                Expr::SetSnd(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
             }
             [Sexp::Atom(S(op)), Sexp::Atom(S(name)), e] if op == "set!" => {
                 Expr::Set(name.to_string(), Box::new(parse_expr(e)))
@@ -233,14 +217,22 @@ fn compile_expr(
             let e_is = compile_expr(e, si, env, brake, l);
             let index = if si % 2 == 1 { si + 2 } else { si + 1 };
             let offset = index * 8;
+            let dbg = new_label(l, "de");
             format!(
                 "
             ; Printing {e:?}
+            {dbg}:
             {e_is}
             sub rsp, {offset}
             ;mov [rsp], rdi
             mov rdi, rax
+
+            ; Round rsp (but have to save it to restore)
+            mov rbx, rsp
+            and rsp, -16
             call snek_print
+            mov rsp, rbx
+
             ;mov rdi, [rsp]
             add rsp, {offset}
           "
@@ -251,9 +243,11 @@ fn compile_expr(
 
             let save = format!("mov [rsp + {offset}], rax");
             let val_is = compile_expr(val, si, env, brake, l);
+            let dbg = new_label(l, "de");
             format!(
                 "
                 ; setting {name} to {val:?}
+                {dbg}:
               {val_is}
               {save}
               "
@@ -263,9 +257,11 @@ fn compile_expr(
         Expr::Sub1(subexpr) => compile_expr(subexpr, si, env, brake, l) + "\nsub rax, 2",
         Expr::IsNum(e) => {
             let e_instr = compile_expr(e, si, env, brake, l);
+            let dbg = new_label(l, "de");
             format!(
                 "
                 ; Checking if {e:?} is a number
+                {dbg}:
                 {e_instr}
                 and rax, 1
                 cmp rax, 0
@@ -288,9 +284,11 @@ fn compile_expr(
             let startloop = new_label(l, "loop");
             let endloop = new_label(l, "loopend");
             let e_is = compile_expr(e, si, env, &endloop, l);
+            let dbg = new_label(l, "de");
             format!(
                 "
                 ; Loop {e:?}
+                {dbg}:
               {startloop}:
               {e_is}
               jmp {startloop}
@@ -373,9 +371,11 @@ fn compile_expr(
             let cond_instrs = compile_expr(cond, si, env, brake, l);
             let thn_instrs = compile_expr(thn, si, env, brake, l);
             let els_instrs = compile_expr(els, si, env, brake, l);
+            let dbg = new_label(l, "de");
             format!(
                 "
                 ; if block {e:?}
+                {dbg}:
               {cond_instrs}
               cmp rax, {FALSE_VAL}
               je {else_label}
@@ -430,9 +430,11 @@ fn compile_expr(
             let val_is = compile_expr(val, si, env, brake, l);
             let body_is = compile_expr(body, si + 1, &env.update(name.to_string(), si), brake, l);
             let offset = si * 8;
+            let dbg = new_label(l, "de");
             format!(
                 "
                 ; Let {name} = {val:?}
+                {dbg}:
               {val_is}
               mov [rsp + {offset}], rax
               {body_is}
@@ -442,9 +444,11 @@ fn compile_expr(
         Expr::Call1(name, arg) => {
             let arg_is = compile_expr(arg, si, env, brake, l);
             let offset = 1 * 8; // one extra word for rdi saving, one for arg
+            let dbg = new_label(l, "de");
             format!(
                 "
                 ; Calling {name:?} with {arg:?}
+                {dbg}:
                 {arg_is}
                 sub rsp, {offset}
                 mov [rsp], rax
@@ -461,11 +465,13 @@ fn compile_expr(
             let curr_word = si * 8;
             let offset = 2 * 8;
             let curr_word_after_sub = offset + curr_word;
+            let dbg = new_label(l, "de");
             // With this setup, the current word will be at [rsp+16], which is where arg1 is stored
             // We then want to get rdi at [rsp+16], arg2 at [rsp+8], and arg1 at [rsp], then call
             format!(
                 "
                 ; Calling {name} with {arg1:?}, {arg2:?}
+                {dbg}:
                 {arg1_is}
                 mov [rsp + {curr_word}], rax
                 {arg2_is}
@@ -491,12 +497,14 @@ fn compile_expr(
         let arg2_location = (si + 1) * 8;
         let arg1_location_after_sub = offset + arg1_location;
         let arg2_location_after_sub = offset + arg2_location;
+        let dbg = new_label(l, "de");
         
 
         // With this setup, the current word will be at [rsp+24], which is where arg1 is stored
         // We then want to get rdi at [rsp+24], arg3 at [rsp+16], arg2 at [rsp+8], and arg1 at [rsp], then call
         format!(
             "
+            {dbg}:
             ; Calling {name} with {arg1:?}, {arg2:?}, {arg3:?}
             {arg1_is}
             mov [rsp + {arg1_location}], rax
@@ -589,7 +597,7 @@ fn compile_expr(
                 jz throw_error 
 
                 ; Null pointer exception
-                cmp rax, 0
+                cmp rax, 1
                 mov rbx, 9
                 je throw_error
 
@@ -639,81 +647,6 @@ fn compile_expr(
 
             instrs
         }
-        // I don't think we need to follow the pattern here of storing the result each time,
-        // We can just put the thing in the place.
-        Expr::Pair(e1, e2) => {
-            let e1is = compile_expr(e1, si, env, brake, l);
-            let e2is = compile_expr(e2, si + 1, env, brake, l);
-            let stack_offset = si * 8;
-            format!(
-                "
-                ; Making pair {e1:?}, {e2:?}
-                {e1is}
-                mov [rsp + {stack_offset}], rax
-                {e2is}
-                mov [r15+8], rax
-                mov rax, [rsp + {stack_offset}]
-                mov [r15], rax
-                mov rax, r15
-                add rax, 1
-                add r15, 16
-            "
-            )
-        }
-
-        
-
-        Expr::Fst(e) => {
-            let eis = compile_expr(e, si, env, brake, l);
-            format!(
-                "
-                {eis}
-                mov rax, [rax-1]
-            "
-            )
-        }
-
-        Expr::Snd(e) => {
-            let eis = compile_expr(e, si, env, brake, l);
-            format!(
-                "
-                {eis}
-                mov rax, [rax+7]
-            "
-            )
-        }
-
-        Expr::SetFst(e1, e2) => {
-            let e1is = compile_expr(e1, si, env, brake, l);
-            let e2is = compile_expr(e2, si + 1, env, brake, l);
-            let stack_offset = si * 8;
-            format!(
-                "
-                {e1is}
-                mov [rsp + {stack_offset}], rax
-                {e2is}
-                mov rbx, [rsp + {stack_offset}]
-                mov [rbx-1], rax
-                mov rax, [rsp + {stack_offset}]
-            "
-            )
-        }
-
-        Expr::SetSnd(e1, e2) => {
-            let e1is = compile_expr(e1, si, env, brake, l);
-            let e2is = compile_expr(e2, si + 1, env, brake, l);
-            let stack_offset = si * 8;
-            format!(
-                "
-                {e1is}
-                mov [rsp + {stack_offset}], rax
-                {e2is}
-                mov rbx, [rsp + {stack_offset}]
-                mov [rbx+7], rax
-                mov rax, [rsp + {stack_offset}]
-            "
-            )
-        },
     }
 }
 
@@ -742,11 +675,6 @@ fn depth(e: &Expr) -> i32 {
         Expr::Call1(_, expr) => depth(expr),
         Expr::Call2(_, expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Call3(_, expr1, expr2, expr3) => depth(expr1).max(depth(expr2) + 1).max(depth(expr3) + 2),
-        Expr::Pair(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
-        Expr::Fst(expr) => depth(expr),
-        Expr::Snd(expr) => depth(expr),
-        Expr::SetFst(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
-        Expr::SetSnd(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Tuple(exprs) => {
             let mut max = 0;
             for (i, expr) in exprs.iter().enumerate() {
@@ -757,7 +685,7 @@ fn depth(e: &Expr) -> i32 {
             }
             max
         },
-        Expr::Index(tup, idx) => depth(tup).max(depth(idx)),
+        Expr::Index(tup, idx) => depth(tup).max(depth(idx) + 1),
     }
 }
 
@@ -859,7 +787,12 @@ extern snek_print
 throw_error:
   push rsp
   mov rdi, rbx
+
+  mov r12, rsp
+  and rsp, -16
   call snek_error
+  mov rsp, r12
+  
   ret
 {}
 our_code_starts_here:

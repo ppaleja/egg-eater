@@ -11,10 +11,16 @@ extern "C" {
 #[no_mangle]
 #[export_name = "\x01snek_error"]
 pub fn snek_error(errcode : i64) {
-    eprintln!("An error occurred {}", errcode);
+    eprintln!("An error occurred: {}", match errcode {
+        7 => "invalid argument!",
+        8 => "index out of bounds!",
+        9 => "null pointer exception!",
+        _ => "unknown errcode",
+    });
     // TODO:
     // 7 means invalid operands
     // 8 means index out of bounds.
+    // 9 means null pointer exception
     std::process::exit(1);
 }
 

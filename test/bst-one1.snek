@@ -28,7 +28,5 @@
   )
 )
 
-(block
-  (print (contains? 5 (make_node 5 nil nil)))
-  (print (contains? 5 (make_node 6 nil nil)))
-)
+(contains? 5 (make_node 6 nil nil))
+

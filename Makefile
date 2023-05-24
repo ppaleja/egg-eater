@@ -30,5 +30,6 @@ test/%.alls: test/%.s runtime/start.rs
 .PRECIOUS: test/%.s
 
 clean:
-	rm -f test/*.a tests/*.s tests/*.run tests/*.o
-	rm -f test/*.a test/*.s test/*.run test/*.o
+	rm -rf test/*.a tests/*.s tests/*.run tests/*.o
+	rm -rf test/*.a test/*.s test/*.run test/*.o
+	rm -rf test/input*.a test/input/*.s test/input/*.run test/input*.o
