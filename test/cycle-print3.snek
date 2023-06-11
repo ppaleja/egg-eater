@@ -1,0 +1,6 @@
+(let (p (tuple 1 2))
+  (let (p2 (tuple 1 2)) (block
+    (print (== p p2))
+    (set-tup! p 2 p2)
+    (set-tup! p2 2 p2)
+    (print (== p p2))))) 

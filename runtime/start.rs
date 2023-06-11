@@ -1,4 +1,5 @@
 use std::env;
+use std::arch::asm;
 #[link(name = "our_code")]
 extern "C" {
     // The \x01 here is an undocumented feature of LLVM that ensures
@@ -44,18 +45,65 @@ fn snek_str(val : i64, seen : &mut Vec<i64>) -> String {
         }
         seen.pop();
         result + ")"
-
-
-        // let fst = unsafe { *addr };
-        // let snd = unsafe { *addr.offset(2) };
-        // let result = format!("(pair {} {})", snek_str(fst, seen), snek_str(snd, seen));
-        // seen.pop();
-        // return result;
     }
     else {
         format!("Unknown value: {}", val)
     }
 }
+
+// let's change snek_str to print ... when it visits a cyclic value
+#[no_mangle]
+#[export_name = "\x01snek_eq"]
+pub extern "C" fn snek_eq(val1: i64, val2: i64) -> i64 {
+    snek_eq_mut(val1, val2, &mut Vec::new())
+}
+
+
+fn snek_eq_mut(val1 : i64, val2 : i64, seen : &mut Vec<(i64, i64)>) -> i64 {
+
+    if (val1 & 7) != (val2 & 7) {
+        return 3; // Different types
+    }
+
+
+    if (val1 & 1 != 1) || (val2 & 1 != 1) {
+        return if val1 == val2 {7} else {3};
+    }
+
+    if (val1 == 1) || (val2 == 1) {
+        return if val1 == val2 {7} else {3};
+    }
+
+    // Now we know that they are:
+    //   - Same Types
+    //   - Tuples
+    //   - Non-Nil
+
+    if seen.contains(&(val1, val2))  { return 7}
+    seen.push((val1, val2));
+    let addr1 = (val1 - 1) as *const i64;
+    let addr2= (val2 - 1) as *const i64;
+    
+    // Note: pair will NOT print correctly anymore
+    let size1: i64 = unsafe { *addr1 } / 2;
+    let size2: i64 = unsafe { *addr2 } / 2;
+
+    if size1 != size2 {
+        return 3;
+    }
+
+    for i in 1..(size1 + 1) {
+        let el1 = unsafe { *addr1.offset(i as isize) };
+        let el2 = unsafe { *addr2.offset(i as isize) };
+        if snek_eq_mut(el1, el2, seen) == 3 {
+            return 3;
+        }
+    }
+    seen.pop();
+    return 7;
+    
+}
+
 
 #[no_mangle]
 #[export_name = "\x01snek_print"]

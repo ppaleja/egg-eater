@@ -4,16 +4,16 @@ This is the design document for the **Egg Eater** language. It builds on syntax 
 | Type| Syntax|
 |--------------|------------------------------------------------------|
 | `<prog>`     | `<defn>* <expr>`                                     |
-| `<defn>`     | `(fun (<name> <name>) <expr>)`                      |
-|              | `(fun (<name> <name> <name>) <expr>)`               |
-|              | `(fun (<name> <name> <name> <name) <expr>)`               |
+| `<defn>`     | `(fun (<name> <name>) <expr>)`                       |
+|              | `(fun (<name> <name> <name>) <expr>)`                |
+|              | `(fun (<name> <name> <name> <name) <expr>)`          |
 | `<expr>`     | `<number>`                                           |
 |              | `true`                                               |
 |              | `false`                                              |
-|              | `input`  |
-|		| `nil` **(*new)**                                            |
+|              | `input`                                              |
+|		           | `nil` **(*new)**                                     |
 |              | `<identifier>`                                       |
-|              | `(let <binding> <expr>)`                         |
+|              | `(let <binding> <expr>)`                             |
 |              | `(<op1> <expr>)`                                     |
 |              | `(<op2> <expr> <expr>)`                              |
 |              | `(set! <name> <expr>)`                               |
@@ -22,24 +22,28 @@ This is the design document for the **Egg Eater** language. It builds on syntax 
 |              | `(loop <expr>)`                                      |
 |              | `(break <expr>)`                                     |
 |              | `(<name> <expr>*)`                                   |
-|              | `(tuple <expr+>)` **(*new)**                                   |
-|              | `(index <expr> <expr>)`**(*new)**                              |
+|              | `(tuple <expr+>)` **(*new)**                         |
+|              | `(index <expr> <expr>)`**(*new)**                    |
+|              | `(set-tup! <expr> <expr> <expr>)` **(*new)**          |
 | `<op1>`      | `add1`                                               |
 |              | `sub1`                                               |
 |              | `isnum`                                              |                                           
 |              | `print`                                              |
 | `<op2>`      | `-`                                                  |
 |              | `+`                                                  |
-|              | `<`        |
-|    		| `>`                                                |                                                                                                          
+|              | `<`                                                  |
+|    		       | `>`                                                  |                                                                                                          
 |              | `=`                                                  |
+|              | `==` **(*new)**                                      |
 | `<binding>`  | `(<identifier> <expr>)`                              |
 
-As you can see, we've added two primitive expressions and one primitive value:
+As you can see, we've added three primitive expressions, one primitive value, and one binary operator:
 
  - `tuple <expr+>`Allocates memory on the heap for an arbitrary number of `expr`'s which are then stored contiguously. The expression evaluates to the address at which the data can be located using `index`. Empty `tuples` are not allowed, and causes a parsing error. Pointer arithmetic is not allowed and will cause a runtime exception. Equality using the `=` is based on *reference equality*, i.e. `(= tup1 tup2)` evaluates to `true` if both point to the same address.
  - `index <expr> <expr>`The first argument to `index` evaluates to a heap-allocated value, i.e. the address of the tuple we would like to index. The second evaluates to a number and the value at that index is returned. Note: our tuples are `1`-indexed; indexing a `tuple`at `0` returns the length of that `tuple`. Negative indexing or indexing out of the bounds of the `tuple`'s allocated causes a runtime exception.
+ - `set-tup! <expr> <expr> <expr>` Structurally updates an index of a tuple (tuples are mutable in this language ¯\\_(ツ)_/¯). The two arguments evaluate similarly to `index`, i.e. the address and position we want to set (starting at 1). The third argument is the value which we want to set the respective index to.
  - `nil` Evaluates to a *null pointer*, pointing to the address `0x0`. Causes a runtime exception when passed as an argument to `index`.
+ - `==` Evaluates the structural equality of the two operands.
 
 ## How values and metadata are arranged on the heap
 Consider the following code:

@@ -34,6 +34,7 @@ enum Expr {
     Let(String, Box<Expr>, Box<Expr>),
     Id(String),
     Eq(Box<Expr>, Box<Expr>),
+    StructEq(Box<Expr>, Box<Expr>),
     Lt(Box<Expr>, Box<Expr>),
     Gt(Box<Expr>, Box<Expr>),
     If(Box<Expr>, Box<Expr>, Box<Expr>),
@@ -49,6 +50,7 @@ enum Expr {
 
     Tuple(Vec<Expr>),
     Index(Box<Expr>, Box<Expr>),
+    SetTup(Box<Expr>, Box<Expr>, Box<Expr>),
 }
 
 fn parse_expr(s: &Sexp) -> Expr {
@@ -71,6 +73,9 @@ fn parse_expr(s: &Sexp) -> Expr {
             [Sexp::Atom(S(op)), tup, idx] if op == "index" => {
                 Expr::Index(Box::new(parse_expr(tup)), Box::new(parse_expr(idx)))
             }
+            [Sexp::Atom(S(op)), tup, idx, val] if op == "set-tup!" => {
+                Expr::SetTup(Box::new(parse_expr(tup)), Box::new(parse_expr(idx)), Box::new(parse_expr(val)))
+            }
             [Sexp::Atom(S(op)), exprs @ ..] if op == "tuple" => {
                 let elements = exprs.iter()
                 .map(|expr| parse_expr(expr))
@@ -88,6 +93,15 @@ fn parse_expr(s: &Sexp) -> Expr {
             [Sexp::Atom(S(op)), e] if op == "print" => Expr::Print(Box::new(parse_expr(e))),
             [Sexp::Atom(S(op)), e1, e2] if op == "=" => {
                 Expr::Eq(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
+            }
+            [Sexp::Atom(S(op)), e1, e2] if op == "==" => {
+                Expr::StructEq(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
+                // Expr::Call2(
+                // "snek_eq".to_string(),
+                // Box::new(parse_expr(e1)),
+                // Box::new(parse_expr(e2)),
+                // )
+
             }
             [Sexp::Atom(S(op)), e1, e2] if op == "<" => {
                 Expr::Lt(Box::new(parse_expr(e1)), Box::new(parse_expr(e2)))
@@ -213,6 +227,34 @@ fn compile_expr(
             let offset = env.get(s).unwrap() * 8;
             format!("mov rax, [rsp + {offset}]")
         }
+        Expr::StructEq(arg1, arg2) => {
+            let arg1_is = compile_expr(arg1, si, env, brake, l);
+            let arg2_is = compile_expr(arg2, si + 1, env, brake, l);
+            let curr_word = si * 8;
+            let offset = 3 * 8;
+            let curr_word_after_sub = offset + curr_word;
+            let dbg = new_label(l, "de");
+            // With this setup, the current word will be at [rsp+16], which is where arg1 is stored
+            // We then want to get rdi at [rsp+16], arg2 at [rsp+8], and arg1 at [rsp], then call
+            format!(
+                "
+                ; Calling snek_eq with {arg1:?}, {arg2:?}
+                {dbg}:
+                {arg1_is}
+                mov [rsp + {curr_word}], rax
+                {arg2_is}
+                sub rsp, {offset}
+                mov [rsp+16], rdi
+                mov rsi, rax
+                
+                mov rax, [rsp+{curr_word_after_sub}]
+                mov rdi, rax
+                call snek_eq
+                mov rdi, [rsp+16]
+                add rsp, {offset}
+                "
+            )
+        }
         Expr::Print(e) => {
             let e_is = compile_expr(e, si, env, brake, l);
             let index = if si % 2 == 1 { si + 2 } else { si + 1 };
@@ -224,16 +266,16 @@ fn compile_expr(
             {dbg}:
             {e_is}
             sub rsp, {offset}
-            ;mov [rsp], rdi
+            mov [rsp], rdi
             mov rdi, rax
 
             ; Round rsp (but have to save it to restore)
-            mov rbx, rsp
+            mov r12, rsp
             and rsp, -16
             call snek_print
-            mov rsp, rbx
+            mov rsp, r12
 
-            ;mov rdi, [rsp]
+            mov rdi, [rsp]
             add rsp, {offset}
           "
             )
@@ -647,6 +689,82 @@ fn compile_expr(
 
             instrs
         }
+        Expr::SetTup(tup, idx, val) => {
+            let mut instrs = "; Compiling index\n".to_string();
+            let tup_is = compile_expr(tup, si, env, brake, l);
+            let tup_offset = si * 8;
+            let idx_is = compile_expr(idx, si + 1, env, brake, l);
+            // let idx_offset = (si + 1) * 8;
+            // We're gonna overwrite it.
+            let val_is = compile_expr(val, si + 1, env, brake, l);
+
+
+            // Think we'll need to use 2 registers here perhaps?
+            // Should make sure $rbx is 0d out
+
+            instrs += format!("
+                {tup_is}
+                ; Let's make sure that this is a valid addr
+                test rax, 1
+                mov rbx, 7
+                jz throw_error 
+
+                ; Null pointer exception
+                cmp rax, 1
+                mov rbx, 9
+                je throw_error
+
+
+                sub rax, 1
+                mov [rsp + {tup_offset}], rax
+                {idx_is}
+            ").as_str();           
+            // So now [rsp + {tup_offset}] has the mem address of the tuple
+            // and the evaluated idx is in rax
+
+            // Out of bounds happens when ([[rsp + tup_offset]] = len) < idx
+
+            instrs += format!("
+                ; First make sure that rax = idx is a valid number
+                mov rbx, rax
+                test rbx, 1
+                mov rbx, 7
+                jnz throw_error
+
+                ; Then we want to make sure (rax=idx) !< 0 
+                cmp rax, 0
+                mov rbx, 8
+                jl throw_error
+
+                ; [rsp + {tup_offset}] has the heap location for the tuple
+                mov rbx, [rsp + {tup_offset}]
+                
+                ; [[rsp + {tup_offset}]] has the 0th value (which is len)
+                mov rbx, [rbx]
+
+
+                ; rbx < rax => 2len < 2idx => len < idx
+                cmp rbx, rax
+                mov rbx, 8
+                jl throw_error
+
+
+                ; rax should still have 2idx, to get a word value, we mul by 4.
+                imul rax, 4
+                mov rcx, rax ; We move it into rcx so we can add it
+
+                {val_is}
+                
+                ; rax should have the val we want to set.
+                ; [rsp + {tup_offset}] should have the heap location (as an addr)
+                mov rbx, [rsp + {tup_offset}]
+                mov [rbx + rcx], rax
+                mov rbx, 0
+                mov rcx, 0
+            ").as_str();
+
+            instrs
+        }
     }
 }
 
@@ -674,6 +792,7 @@ fn depth(e: &Expr) -> i32 {
         Expr::Set(_, expr) => depth(expr),
         Expr::Call1(_, expr) => depth(expr),
         Expr::Call2(_, expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
+        Expr::StructEq(expr1, expr2) => depth(expr1).max(depth(expr2) + 1),
         Expr::Call3(_, expr1, expr2, expr3) => depth(expr1).max(depth(expr2) + 1).max(depth(expr3) + 2),
         Expr::Tuple(exprs) => {
             let mut max = 0;
@@ -686,6 +805,7 @@ fn depth(e: &Expr) -> i32 {
             max
         },
         Expr::Index(tup, idx) => depth(tup).max(depth(idx) + 1),
+        Expr::SetTup(tup, idx, val) => depth(tup).max(depth(idx) + 1).max(depth(val) + 1),
     }
 }
 
@@ -784,6 +904,7 @@ section .text
 global our_code_starts_here
 extern snek_error
 extern snek_print
+extern snek_eq
 throw_error:
   push rsp
   mov rdi, rbx
