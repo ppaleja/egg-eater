@@ -107,7 +107,7 @@ Our call to `snek_eq` immediately utilizes a helper function `snek_eq_mut` to do
 In `snek_eq_mut`, our approach to checking the structural equality of two tuples is as follows:
 
 1. Type checking: Make sure the values we are working with both non-nil tuples (equality is still defined for non-tuples, but it isn't really worth discussing here as it reduces to standard equality checking)
-2. Cycle checking: We keep a list of the addresses we've seen in *both* tuples. This is so that if the tuples have the same *cyclic* structure, we will return true. We then add this pair of addresses (below this is `val1`, `val2`) to the `seen` list.
+2. Cycle checking: We keep a list of the addresses we've seen in *both* tuples. This is so that if the tuples have the same *cyclic* structure (i.e. with respect to the depth of unravelling the infinitely nested tuples), we will return true. We then add this pair of addresses (below this is `val1`, `val2`) to the `seen` list.
 3. Check equality of each element: We check the equality of each element in the respective tuples and the equality of each respective element is evaluated recursively, to make sure we reflect the full depth of the tuple. Note that what we are looking for is a witness *against* equality, i.e. a pair of elements that evaluate to not equal in the tuple.
 4. Pop and return: After we've checked each element of the tuple, we can verifibly assume that there is no cyclic equality, so we pop our pair of addresses from our `seen` list. More importantly, we've failed to find a witness against equality and from the previous step we've exhausted both tuples (even if they are infinitely sized), so we return `true`.
 
@@ -162,6 +162,10 @@ In `snek_eq_mut`, our approach to checking the structural equality of two tuples
         return 7;
 
     }
+
+## Structural Equality: Remark on Cycles
+
+Our language evaluates structural equality by searching for a witness *against* equality; if we find one, return `false`, if we don't return `true`. Thus, we evaluate the equality of cycles by implicitly checking if, were we to unravell them infinitely, all the elements are the same. As stated above this is why we keep the `seen` list, because if we have found a pair of addresses that we've already seen before and we have not found a witness against equality, we will *never* find one, by the cyclic nature of the tuples we're checking. 
 
 ## Example: Constructing and accessing heap-allocated data
 
