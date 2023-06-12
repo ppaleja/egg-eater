@@ -1,0 +1,6 @@
+(let (x (tuple 1 2 3)) (let (y (tuple 1 2 3)) (block
+    (print (set-tup! x 1 x))
+    (print (set-tup! y 1 y))
+    (print (set-tup! x 2 y))
+    (print (set-tup! y 2 x))
+    (== x y))))

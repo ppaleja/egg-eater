@@ -32,7 +32,7 @@ fn snek_str(val : i64, seen : &mut Vec<i64>) -> String {
     else if val % 2 == 0 { format!("{}", val >> 1) }
     else if val == 1 { "nil".to_string() }
     else if val & 1 == 1 {
-        if seen.contains(&val)  { return "(pair <cyclic>)".to_string() }
+        if seen.contains(&val)  { return "(tuple <cyclic>)".to_string() }
         seen.push(val);
         let addr = (val - 1) as *const i64;
         
@@ -65,11 +65,12 @@ fn snek_eq_mut(val1 : i64, val2 : i64, seen : &mut Vec<(i64, i64)>) -> i64 {
         return 3; // Different types
     }
 
-
+    // If not tuples, then we don't have to do anything special
     if (val1 & 1 != 1) || (val2 & 1 != 1) {
         return if val1 == val2 {7} else {3};
     }
 
+    // If nil, then we don't have to do anything special
     if (val1 == 1) || (val2 == 1) {
         return if val1 == val2 {7} else {3};
     }
@@ -79,7 +80,7 @@ fn snek_eq_mut(val1 : i64, val2 : i64, seen : &mut Vec<(i64, i64)>) -> i64 {
     //   - Tuples
     //   - Non-Nil
 
-    if seen.contains(&(val1, val2))  { return 7}
+    if seen.contains(&(val1, val2))  { return 7 }
     seen.push((val1, val2));
     let addr1 = (val1 - 1) as *const i64;
     let addr2= (val2 - 1) as *const i64;

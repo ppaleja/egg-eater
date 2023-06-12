@@ -2,9 +2,9 @@
     (let (p2 (tuple 1 2)) 
         (let (p3 (tuple 2 p)) 
             (let (p4 (tuple 1 p3)) (block
+                (print (== p p2))
+                (print (== p p3))
                 (set-tup! p 2 p2)
                 (set-tup! p2 2 p2)
-                (print p)
-                (print p2)
-                (print p3)
-                (print p4))))))
+                (print (== p p2))
+                (print (== p p4)))))))
